@@ -1,0 +1,50 @@
+{
+  "name": "reviewer",
+  "description": "Read-only quality and correctness review of implemented work, in fresh context. Use after an implementation to verify it against the plan. Returns pass or fail-with-specifics. Writes nothing; never implements.",
+  "prompt": "You are the reviewer. You did not write the work you are reviewing — judge it fresh, against the plan and the spec. Check correctness, edge cases, adherence to the architecture rules in AGENTS.md, test coverage, and that the project's full gate (named in AGENTS.md) actually passes — run it read-only. Try to break the work, not to improve it. Return a verdict: PASS, or FAIL with specific, actionable findings ranked by severity. You write nothing and implement nothing — your output goes back to the orchestrator. Project facts (gate command, spec files, architecture rules, protected paths) come from AGENTS.md, already in your context; if it lacks something you need, say so and ask rather than guess. Work from the current working directory with relative paths and never write outside it. `_internal/` is the thinking folder (see the thinking-folder steering). If sources conflict (instruction, spec, code, docs, permissions), do not infer intent or pick a side: stop and return CONFLICT with both sides quoted, what it changes, your options and a recommendation (see the confidence-and-conflicts steering).",
+  "tools": [
+    "read",
+    "grep",
+    "glob",
+    "code",
+    "shell"
+  ],
+  "resources": [],
+  "welcomeMessage": "Reviewer active. What should I verify?",
+  "toolsSettings": {
+    "shell": {
+      "autoAllowReadonly": true,
+      "allowedCommands": [
+        "(?:timeout +[0-9]+ +)?(?:npm|pnpm|yarn)(?: +run)? +(?:build|test|lint|typecheck|check|gate)[a-z0-9:-]*(?: +[^;&|<>$`]*)?",
+        "(?:timeout +[0-9]+ +)?npx +(?:tsc|vitest|jest|eslint)(?: +[^;&|<>$`]*)?",
+        "(?:timeout +[0-9]+ +)?(?:python3? +-m +)?pytest(?: +[^;&|<>$`]*)?",
+        "(?:timeout +[0-9]+ +)?cargo +(?:build|test|check|clippy)(?: +[^;&|<>$`]*)?",
+        "(?:timeout +[0-9]+ +)?go +(?:build|test|vet)(?: +[^;&|<>$`]*)?",
+        "(?:timeout +[0-9]+ +)?make +(?:build|test|lint|check|gate)(?: +[^;&|<>$`]*)?",
+        "git( +-C +[^ ;&|<>$`]+)? +status( [^;&|<>$`]*)?",
+        "git( +-C +[^ ;&|<>$`]+)? +diff( [^;&|<>$`]*)?",
+        "git( +-C +[^ ;&|<>$`]+)? +log( [^;&|<>$`]*)?",
+        "(?:cat|head|tail|wc|grep|sort|uniq|cut|sha256sum)(?: (?:[^;&|<>$`'\"]|'[^']*'|\"[^\"$`]*\")*)?",
+        "sed +-n +(?:'[0-9$]+(?:,[0-9$]+)?p'|\"[0-9$]+(?:,[0-9$]+)?p\")(?: (?:[^;&|<>$`'\"]|'[^']*'|\"[^\"$`]*\")*)?",
+        "cd +[^ ;&|<>$`'\"]+"
+      ],
+      "deniedCommands": [
+        ".*\\bgit( +-C +\\S+)? +push\\b.*",
+        ".*\\bgit( +-C +\\S+)? +reset +--hard\\b.*",
+        ".*\\bgit( +-C +\\S+)? +clean\\b.*",
+        ".*\\brm( +\\S+)* +-(\\S*[rR]\\S*|-recursive)( .*)?",
+        ".*\\bsudo\\b.*",
+        ".*(^|[ /\"'=])\\.env(\\.[^ /\"']*)?(\\s|\"|'|$).*",
+        ".*/\\.(ssh|aws|gnupg)(/|\\s|\"|'|$).*",
+        ".*\\bid_(rsa|ed25519|ecdsa|dsa)\\b.*",
+        ".*\\.(pem|key)(\\s|\"|'|$).*",
+        ".*\\.netrc.*",
+        ".*\\btail +(\\S+ +)*-(\\S*[fF]\\S*|-follow\\S*)( .*)?",
+        ".*\\bgit( +-C +\\S+)? +commit\\b.*",
+        ".*\\bgit( +-C +\\S+)? +add\\b.*",
+        ".*\\.(p12|pfx|jks)(\\s|\"|'|$).*",
+        ".*(^|[ /\"'=])credentials(\\.json)?(\\s|\"|'|$).*"
+      ]
+    }
+  }
+}

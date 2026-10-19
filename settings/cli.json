@@ -1,0 +1,5 @@
+{
+  "chat.defaultModel": "auto",
+  "mcp.loadedBefore": true,
+  "chat.defaultAgent": "orchestrator"
+}

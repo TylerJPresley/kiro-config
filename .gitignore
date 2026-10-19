@@ -1,0 +1,29 @@
+# Session & runtime state (local, not portable)
+sessions/
+session-index/
+logs/
+
+# Local app/UI state
+settings/feed_state.json
+settings/survey_state.json
+
+# Potential secrets — never commit
+settings/mcp.json
+**/mcp.json
+.env
+*.env
+*token*
+*credential*
+*.key
+*.pem
+
+# OS cruft
+.DS_Store
+**/.DS_Store
+
+# Local safety copies (not part of the standard)
+backups/
+*.bak
+
+# Agent working notes, scratch and backups (see steering/thinking-folder.md)
+_internal/
