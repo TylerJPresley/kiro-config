@@ -12,7 +12,4 @@ Applies: while working with files, commands and long contexts.
 - Reading the same file twice without writing means you are stalling: decide and act.
 - A failed tool call: diagnose the error before retrying. Same arguments, same failure.
 
-## Context budget
-Prefer small focused reads over whole large files. Read what you need, then stop.
-
 Prevents: blind edits, retry loops, wasted context.
