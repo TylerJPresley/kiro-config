@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Session tracker: .kiro/progress.md in the directory Kiro was started from (the same .kiro/ folder Kiro already uses).
-//   progress.mjs show                 print the tracker (creates it from the template if missing)
+//   progress.mjs show [--full]        print the tracker, Log trimmed to the last 5 lines unless --full (creates it from the template if missing)
 //   progress.mjs log "text"           append a dated line to Log and refresh 'Last updated'
 //   progress.mjs set <Section>        replace a section's body with stdin (Cold start | State | Open items | Decisions pending)
 //   progress.mjs path                 print the tracker path
@@ -19,7 +19,7 @@ let t = fs.readFileSync(file, "utf8"); const cmd = args[0] ?? "show";
 const touch = (s) => s.replace(/^Last updated: .*$/m, `Last updated: ${new Date().toISOString().slice(0, 16).replace("T", " ")}`);
 const split = (s) => { const m = {}; let cur = null; let pre = []; for (const l of s.split("\n")) { const h = l.match(/^## (.+)$/); if (h) { cur = h[1]; m[cur] = []; } else if (cur) m[cur].push(l); else pre.push(l); } return { pre: pre.join("\n"), m }; };
 const join = ({ pre, m }) => pre + "\n" + Object.entries(m).map(([k, v]) => `## ${k}\n${v.join("\n").replace(/\n+$/, "")}\n`).join("\n");
-if (cmd === "show") process.stdout.write(t);
+if (cmd === "show") { if (args[1] === "--full") process.stdout.write(t); else { const q = split(t); const all = q.m["Log"].filter((l) => l.trim()); const hidden = Math.max(0, all.length - 5); q.m["Log"] = [...(hidden ? [`(${hidden} earlier Log lines hidden - \`progress.mjs show --full\` for all)`] : []), ...all.slice(-5)]; process.stdout.write(join(q)); } }
 else if (cmd === "path") console.log(file);
 else if (cmd === "log") { const text = args.slice(1).join(" ").trim(); if (!text) { console.error('usage: log "text"'); process.exit(2); } const p = split(t); const lines = p.m["Log"].filter((l) => l.trim()); lines.push(`- ${new Date().toISOString().slice(0, 16).replace("T", " ")} ${text}`); p.m["Log"] = lines.slice(-40); fs.writeFileSync(file, touch(join(p))); console.log("logged"); }
 else if (cmd === "set") { const sec = args.slice(1).join(" "); if (!SECTIONS.slice(0, 4).includes(sec)) { console.error("section must be one of: " + SECTIONS.slice(0, 4).join(" | ")); process.exit(2); } const body = fs.readFileSync(0, "utf8").replace(/\s+$/, ""); const p = split(t); p.m[sec] = body.split("\n"); fs.writeFileSync(file, touch(join(p))); console.log("updated " + sec); }

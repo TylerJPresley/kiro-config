@@ -28,3 +28,26 @@ console.log(`\ntop ${topN} turns by credits: session turn agent credits input ou
 for (const x of [...all].sort((a, b) => b.cred - a.cred).slice(0, topN)) console.log(`  ${x.s} #${String(x.i).padStart(3)} ${x.agent.padEnd(14)} ${fmt(x.cred).padStart(7)} ${fmt(x.inp).padStart(8)} ${fmt(x.out).padStart(7)} ${String(x.reqs).padStart(4)} ${String(x.cycles).padStart(3)} ${String(x.tools).padStart(3)} ${String(Math.round(x.secs)).padStart(5)}s ${Math.round(x.ctx)}%`);
 const many = all.filter((x) => x.reqs > 20); console.log(`\nturns with >20 model requests: ${many.length} of ${all.length}  (credits ${fmt(sum("cred", many))}, ${Math.round(100 * sum("cred", many) / Math.max(1, sum("cred")))}% of total; avg credits/request ${(sum("cred") / Math.max(1, sum("reqs"))).toFixed(2)})`);
 const big = all.filter((x) => x.ctx >= 70); console.log(`\nturns started/ended at >=70% context: ${big.length} of ${all.length}  (credits in them: ${fmt(sum("cred", big))}, ${Math.round(100 * sum("cred", big) / Math.max(1, sum("cred")))}% of total)`);
+
+// MODEL-CALL METRICS from transcripts (measured, not credits): calls = assistant messages; out = bytes of assistant messages;
+// (images are JSON byte arrays: counted as a fixed 6KB-equivalent each, not their inflated JSON size)
+// ctx-in = bytes re-sent as history on every call (sum over calls of everything before it) - the dominant input cost, system prompt/tools excluded.
+// Subagent runs are UNMETERED by Kiro (no tokens/credits; parent turn totals exclude them), so these are the only measure of their size.
+const measure = (jl) => { let calls = 0, out = 0, inn = 0, hist = 0; for (const l of fs.readFileSync(jl, "utf8").trim().split("\n")) { let e; try { e = JSON.parse(l); } catch { continue; } const raw = JSON.stringify(e.data ?? {}); const imgs = (raw.match(/\[[\d,]{500,}\]/g) ?? []).length; const b = Buffer.byteLength(raw.replace(/\[[\d,]{500,}\]/g, "[]")) + imgs * 6000; if (e.kind === "AssistantMessage") { calls++; out += b; inn += hist; } hist += b; } return { calls, out, inn }; };
+const mb = (n) => (n / 1e6).toFixed(1);
+{
+  const ids = new Set(pick.map((x) => x.f.slice(0, -5)));
+  const subs = []; const main = { calls: 0, out: 0, inn: 0 };
+  for (const { f } of pick) { const jl = path.join(dir, f.slice(0, -5) + ".jsonl"); if (fs.existsSync(jl)) { const m = measure(jl); for (const k of Object.keys(main)) main[k] += m[k]; } }
+  for (const { f } of files) {
+    let j; try { j = JSON.parse(fs.readFileSync(path.join(dir, f), "utf8")); } catch { continue; }
+    if (!j.parent_session_id || (arg !== "all" && !ids.has(j.parent_session_id))) continue;
+    const jl = path.join(dir, f.slice(0, -5) + ".jsonl"); if (!fs.existsSync(jl)) continue;
+    subs.push({ id: f.slice(0, 8), title: (j.title ?? "").replace(/\s+/g, " ").slice(0, 40), ...measure(jl) });
+  }
+  const t = (k) => subs.reduce((s, x) => s + x[k], 0);
+  console.log(`\nMODEL CALLS from transcripts (measured; credits NOT recorded for subagents):  calls  out-MB  ctx-in-MB`);
+  console.log(`  orchestrator (picked sessions)        ${String(main.calls).padStart(7)}  ${mb(main.out).padStart(6)}  ${mb(main.inn).padStart(9)}`);
+  console.log(`  subagents (${subs.length} sessions, parent_session_id set)${" ".repeat(Math.max(1, 5 - String(subs.length).length))}${String(t("calls")).padStart(7)}  ${mb(t("out")).padStart(6)}  ${mb(t("inn")).padStart(9)}`);
+  for (const x of [...subs].sort((a, b) => b.inn - a.inn).slice(0, 5)) console.log(`    ${x.id} calls ${String(x.calls).padStart(4)}  out ${mb(x.out).padStart(5)}MB  ctx-in ${mb(x.inn).padStart(6)}MB  ${x.title}`);
+}

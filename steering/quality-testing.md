@@ -8,6 +8,7 @@ Applies: when writing tests, fixing bugs, or debugging.
 - Broad base of unit tests, fewer integration tests, minimal end-to-end.
 
 ## Debug systematically
+Build a tight feedback loop first: one command that reproduces the failure fast, before forming any hypothesis.
 No fix without root-cause investigation: reproduce and observe; identify the failing assumption; hypothesize; implement and verify. Same arguments give the same failure, so diagnose before retrying.
 
 ## Structure and mocks

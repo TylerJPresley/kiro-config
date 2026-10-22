@@ -9,7 +9,7 @@ Intent: a brief an agent can execute without guessing, stalling or over-reportin
 
 1. **Context** — project, HEAD, what is uncommitted and whose it is, "no other agents work in parallel unless stated".
 2. **System map (Tier 2+)** — from the `systems-thinking` skill: touches, must not break, predicted files.
-3. **Read first** — spec sections and files (reference, do not paste).
+3. **Read first** — spec sections and files with EXACT line ranges (reference, do not paste); the agent reads each once and does not re-read in slices. Say which independent reads to batch in one call (every call re-sends the whole history).
 4. **Pinned decisions** — numbered; "if the code contradicts one, finish the rest and report a CONFLICT".
 5. **Tests** — failing test first for bugs; the acceptance tests; the real path (model -> tool -> effect).
 6. **Gate** — `_internal/tools/gate.sh` (project helper) or the project's gate; targeted tests for steps, one full run at the end.
