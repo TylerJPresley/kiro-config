@@ -47,12 +47,12 @@ Read end to end, the setup encodes a consistent point of view:
 
 In short: a small, auditable set of rules that make the *good* path the *easy* path, so an agent produces work that is planned, delegated, verified, and reversible — by default rather than by reminder.
 
-### Concise by budget, checked by script
+### Concise, checked by script
 
-The always-on context is kept small, and a script checks its size. Anything countable or checkable is done by a program, so it gives the same answer every time. The model's own judgment is still probabilistic, so the config limits where that judgment is trusted and requires evidence for claims.
+The always-on files are kept short, and a script checks each file's size. Anything countable or checkable is done by a program, so it gives the same answer every time. The model's own judgment is still probabilistic, so the config limits where that judgment is trusted and requires evidence for claims.
 
 **Mechanically enforced** (a script or permission rule fails if it is broken):
-- `scripts/steering-lint.mjs` caps each always-on steering file at 2,200 bytes and the whole set at 14,500 bytes, and exits non-zero if either is exceeded. The set currently measures 14,463 bytes (about 3,600 tokens, estimated as bytes ÷ 4), and the lint passes.
+- `scripts/steering-lint.mjs` caps each always-on steering file at 2,200 bytes and exits non-zero if one is over. It also prints the total size of the set (bytes, and tokens estimated as bytes ÷ 4) for information; the total is not capped.
 - Skill descriptions are capped at 320 characters. They are the only part of a skill that is always loaded; the body loads on demand.
 - The lint fails when a line of 60+ characters appears verbatim in two steering files. It does not catch a rule that has been reworded.
 - `lessons.mjs` and `steering-lint.mjs` run with no model: same input, same output.
@@ -104,7 +104,7 @@ Global steering and skills are always loaded. When you start Kiro inside a proje
 
 ## Steering
 
-Steering files are always-on rules Kiro reads every session. Each states its **Intent** (the goal), **Applies** (when it's in force), and **Prevents** (the failure it heads off), kept deliberately small so the whole set fits a token budget. There are **13** steering files:
+Steering files are always-on rules Kiro reads every session. Each states its **Intent** (the goal), **Applies** (when it's in force), and **Prevents** (the failure it heads off), each kept short. The steering files:
 
 | File | Intent (one line) |
 |------|-------------------|
@@ -116,13 +116,16 @@ Steering files are always-on rules Kiro reads every session. Each states its **I
 | `confidence-and-conflicts.md` | Stop guessing on real unknowns, stop burning cycles on small ones; surface real conflicts. |
 | `destructive-actions.md` | Protect existing work and shared systems from irreversible changes. |
 | `blueprints.md` | Specs are first-class and the source of truth; code follows them, never the reverse. |
-| `project-contract.md` | Agents stay project-neutral; the project supplies its own facts in one place. |
+| `project-contract.md` | Agents stay project-neutral; the project supplies its own facts in its own files. |
+| `project-files.md` | Each concern has one home (README, CONTRIBUTING, AGENTS), so a rule lives in one place and cannot drift. |
+| `git-standards.md` | Small, tested, readable history in every project; the project's CONTRIBUTING.md overrides these defaults. |
+| `session-tracking.md` | Any session resumes from zero context without writing into the project. |
 | `thinking-folder.md` | One common place (`_internal/`) for agent and project working notes. |
 | `script-first.md` | Mechanical work is done by deterministic scripts; models are spent on judgment. |
 | `workflow-patterns.md` | Efficient, non-stalling tool use (read before write, diagnose before retry). |
 | `concise.md` | Short, decision-useful replies. |
 
-> All 13 steering `.md` files are listed above (`systems-thinking` lives as a skill, not steering). Count them yourself with `ls steering/` — the set evolves.
+> The steering `.md` files are listed above (`systems-thinking` lives as a skill, not steering). Check with `ls steering/`; the set evolves.
 
 ## Agents
 
@@ -161,6 +164,7 @@ Skills are playbooks loaded on demand by name (not always-on). Each is a `SKILL.
 | `data-engineering` | Data has one authoritative form, a model before a store, and safe access. |
 | `orchestration` | The orchestrator drives work to a verified result with the least cost and time. |
 | `orchestrator-brief` | Template for briefs to implementer, reviewer, and verifier agents. |
+| `project-files` | Starter README.md, CONTRIBUTING.md and AGENTS.md for a project that lacks them. |
 | `product-strategy` | Ship small, learn from real use, keep the code and the message consistent. |
 | `real-environment-verification` | How to verify a built product in a real environment without touching the user's own config. |
 | `reliability-engineering` | Reliability is a measured target, not an absolute, and failures are learned from. |
@@ -179,7 +183,7 @@ Deterministic Node helpers (require Node 18+). Run them from within the project 
 | Script | What it does | Run |
 |--------|--------------|-----|
 | `lessons.mjs` | Tracks recurring patterns in `<cwd>/_internal/lessons.md`. `add` records a pattern or bumps its count, `promote` marks it promoted, `list [ready]` shows all (or only patterns seen ≥ 3 times, ready to promote). No model needed. | `node ~/.kiro/scripts/lessons.mjs add <id> "<pattern>" "<evidence>"`<br>`node ~/.kiro/scripts/lessons.mjs list ready` |
-| `steering-lint.mjs` | Lints the global steering and skills: each steering file has `Intent:`/`Applies:` lines and stays under the per-file and total size budgets; each skill has valid frontmatter whose `name` matches its directory and a `description` under the length cap; flags rules duplicated across files. | `node ~/.kiro/scripts/steering-lint.mjs`<br>`node ~/.kiro/scripts/steering-lint.mjs --also path/to/project/.kiro` |
+| `steering-lint.mjs` | Lints the global steering and skills: each steering file has `Intent:`/`Applies:` lines and stays under the per-file size cap; each skill has valid frontmatter whose `name` matches its directory and a `description` under the length cap; flags rules duplicated across files. | `node ~/.kiro/scripts/steering-lint.mjs`<br>`node ~/.kiro/scripts/steering-lint.mjs --also path/to/project/.kiro` |
 
 ## Install / use
 
