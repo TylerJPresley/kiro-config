@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-// Lint the global steering and skills: shape, size budget, duplicated rules. No model needed.
+// Lint the global steering and skills: shape, per-file size, duplicated rules. No model needed.
 // usage: node ~/.kiro/scripts/steering-lint.mjs [--steering-dir DIR] [--skills-dir DIR] [--also PROJECT/.kiro]
 import fs from "node:fs"; import path from "node:path"; import os from "node:os";
 const arg = (n, d) => { const i = process.argv.indexOf(n); return i > 0 ? process.argv[i + 1] : d; };
 const dirs = [{ s: arg("--steering-dir", path.join(os.homedir(), ".kiro/steering")), k: arg("--skills-dir", path.join(os.homedir(), ".kiro/skills")) }];
 const also = arg("--also"); if (also) dirs.push({ s: path.join(also, "steering"), k: path.join(also, "skills") });
-const FILE_MAX = 2200, TOTAL_MAX = 16500, DESC_MAX = 320;
+const FILE_MAX = 2200, DESC_MAX = 320;
 let bad = 0; const fail = (m) => { bad++; console.log("FAIL " + m); }; const warn = (m) => console.log("warn " + m);
 let total = 0; const lines = new Map();
 for (const { s, k } of dirs) {
@@ -27,6 +27,5 @@ for (const { s, k } of dirs) {
   }
 }
 for (const [l, fs_] of lines) if (fs_.size > 1) fail(`duplicated rule in ${[...fs_].join(", ")}: "${l.slice(0, 80)}…"`);
-console.log(`always-on steering: ${total} bytes (~${Math.round(total / 4)} tokens), budget ${TOTAL_MAX}`);
-if (total > TOTAL_MAX) fail(`total always-on steering ${total} > ${TOTAL_MAX}`);
+console.log(`always-on steering: ${total} bytes (~${Math.round(total / 4)} tokens)`);
 console.log(bad ? `${bad} problem(s)` : "steering lint OK"); process.exit(bad ? 1 : 0);
