@@ -4,6 +4,12 @@ A shared, personal configuration for the [Kiro](https://kiro.dev) CLI. It is the
 
 This repo is the global config itself, not a project built with Kiro. There is intentionally **no `AGENTS.md`** here — that file belongs in a *project* repo to supply project facts (gate commands, spec files, protected paths). The config in this repo stays project-neutral.
 
+## Warning
+
+This config runs with the training wheels off. `settings/cli.json` sets `chat.disableTrustAllConfirmation: true`, which removes the confirmation Kiro CLI normally shows before trusting every tool. Review that file and decide for yourself before you copy this setup.
+
+> "I run with the training wheels off. We do it right the first time."
+
 ## The idea behind it
 
 The whole config is built around two habits: **drive work through one orchestration loop**, and **think in systems before touching anything non-trivial**. Everything else — the agent roster, the steering rules, the skills, the scripts — exists to make those two habits cheap and hard to skip.
