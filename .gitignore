@@ -2,10 +2,12 @@
 sessions/
 session-index/
 logs/
+.kiro/
 
 # Local app/UI state
 settings/feed_state.json
 settings/survey_state.json
+settings/*.lock
 
 # Potential secrets — never commit
 settings/mcp.json
