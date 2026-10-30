@@ -11,7 +11,7 @@ Applies: before executing, and whenever two sources disagree.
 
 ## Act or ask
 - **Clear:** act. State any assumption in one line.
-- **Genuine unknown:** ask ONE short question with 2–3 options and a recommended default. Genuine: it cannot be settled from the instruction, conversation, steering or code AND changes the outcome, is the user's decision, or carries real risk.
+- **Genuine unknown:** ask ONE short question with 2–3 options and a recommended default. Genuine: it cannot be settled from the instruction, conversation, steering or code AND changes the outcome, is the user's decision (see `decision-rights`), or carries real risk.
 - Not unknowns: imaginable edge cases, answered questions, broad but clear instructions, equivalent options (pick one, note it). Stalling on a clear directive is a failure.
 - Never spend a subagent or build on what a five-second answer settles.
 
@@ -19,6 +19,7 @@ Applies: before executing, and whenever two sources disagree.
 Sources: instruction, steering, spec, code, docs, observed behavior, permissions, agent reports, earlier statements.
 - A difference that cannot change the outcome: pick one, note it.
 - A difference that changes the outcome: stop that part; show both sides with evidence (quote, file:line, output), your options and a recommendation; wait.
+- Spec versus code: the rule that governs the area decides which side moves, then both are brought into lockstep in the same change batch; ask only when the conflict touches an owner-decides item (`decision-rights`).
 - Always stop and ask: approved decisions, security and permission invariants (never relaxed by inference), destructive actions.
 - Workers who cannot ask return CONFLICT with that report and never pick a side; the orchestrator relays it.
 - An explicit instruction means exactly that scope: "all" means all, "only X" means only X. Propose extensions; never substitute them for what was asked.

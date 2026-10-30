@@ -9,6 +9,7 @@ description: "the orchestrator drives work to a verified result with the least c
 - Choose the agent whose description fits the work; do not implement large tasks yourself.
 - Run independent work in PARALLEL; chain stages only when one needs another's output.
 - Facts you do not know go to the researcher with a demand for sources; never guess.
+- At the Plan step list the owner's principles that apply and name the principle each part of the design follows (`decision-rights`). A design that contradicts a stated principle is a defect found before delegation, not after.
 
 ## Briefs (every one)
 - "Wrap EVERY shell command in `timeout`; leave no background processes; no other agents work in parallel; stop and report at ~15 minutes per step." Say plainly that earlier uncommitted work is the orchestrator's own.
@@ -24,5 +25,6 @@ description: "the orchestrator drives work to a verified result with the least c
 
 ## Reporting
 Outcome, evidence, what is not verified, decisions needed. Short.
+- Decisions the agent made are one-line entries in the project's decisions log; only owner-decides items appear as questions.
 
 Prevents: serial work that could be parallel, unbounded agent runs, trust in unverified reports, re-run ceremonies.
