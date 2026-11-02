@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 // Where do Kiro tokens/credits go?  usage: node ~/.kiro/scripts/kiro-usage.mjs [session-id|latest|all] [--top N]
+// Views: `by-session` (top sessions, by working directory, by day) and `by-context [--agent NAME]` (credits per request by context bucket; default orchestrator).
 // Reads ~/.kiro/sessions/cli/<id>.json (user_turn_metadatas) - no model, no network.
 import fs from "node:fs"; import path from "node:path"; import os from "node:os";
 const dir = path.join(os.homedir(), ".kiro/sessions/cli");
@@ -9,6 +10,28 @@ const since = process.argv.includes("--since") ? Date.parse(process.argv[process
 const files = fs.readdirSync(dir).filter((f) => f.endsWith(".json")).map((f) => ({ f, t: fs.statSync(path.join(dir, f)).mtimeMs })).filter((x) => x.t >= since).sort((a, b) => b.t - a.t);
 const pick = arg === "all" ? files : arg === "latest" ? files.slice(0, 1) : files.filter((x) => x.f.startsWith(arg));
 const credit = (m) => { const u = m?.metering_usage; if (u == null) return 0; if (typeof u === "number") return u; if (Array.isArray(u)) return u.reduce((s, x) => s + (Number(x?.value ?? x?.usage ?? 0) || 0), 0); return Number(u.value ?? u.usage ?? 0) || 0; };
+
+const turnsOf = (j) => { const t = j.session_state?.conversation_metadata?.user_turn_metadatas; return Array.isArray(t) ? t : Object.values(t ?? {}); };
+if (arg === "by-session") {
+  const rows = [];
+  for (const { f } of files) { let j; try { j = JSON.parse(fs.readFileSync(path.join(dir, f), "utf8")); } catch { continue; } const a = turnsOf(j); if (!a.length) continue;
+    rows.push({ id: f.slice(0, 8), agent: j.session_state?.agent_name, cwd: (j.cwd ?? "").replace(os.homedir(), "~"), from: (j.created_at ?? "").slice(0, 10), to: (j.updated_at ?? "").slice(0, 10), turns: a.length, reqs: a.reduce((s, x) => s + (x.total_request_count ?? 0), 0), cred: a.reduce((s, x) => s + credit(x), 0), maxctx: Math.max(...a.map((x) => x.final_context_usage_percentage ?? 0)), title: (j.title ?? "").replace(/\s+/g, " ").slice(0, 50) }); }
+  const tot = rows.reduce((s, r) => s + r.cred, 0);
+  console.log(`TOTAL ${Math.round(tot)} credits, ${rows.length} sessions\n\nTOP SESSIONS`);
+  for (const r of [...rows].sort((a, b) => b.cred - a.cred).slice(0, topN)) console.log(`${r.id} ${String(r.agent).padEnd(12)} ${r.from}..${r.to} turns ${String(r.turns).padStart(4)} reqs ${String(r.reqs).padStart(5)} cred ${String(Math.round(r.cred)).padStart(6)} (${Math.round((100 * r.cred) / tot)}%) maxctx ${Math.round(r.maxctx)}% ${r.cwd} | ${r.title}`);
+  const grp = (key) => { const g = {}; for (const r of rows) g[key(r)] = (g[key(r)] ?? 0) + r.cred; return Object.entries(g); };
+  console.log("\nBY WORKING DIRECTORY"); for (const [k, v] of grp((r) => r.cwd).sort((a, b) => b[1] - a[1]).slice(0, 8)) console.log(`${String(Math.round(v)).padStart(7)} ${k}`);
+  console.log("\nBY DAY (session last-updated date)"); for (const [k, v] of grp((r) => r.to).sort()) console.log(k, Math.round(v));
+  process.exit(0);
+}
+if (arg === "by-context") {
+  const agent = process.argv.includes("--agent") ? process.argv[process.argv.indexOf("--agent") + 1] : "orchestrator"; const b = {};
+  for (const { f } of files) { let j; try { j = JSON.parse(fs.readFileSync(path.join(dir, f), "utf8")); } catch { continue; } if (j.session_state?.agent_name !== agent || j.parent_session_id) continue;
+    for (const x of turnsOf(j)) { const r = x.total_request_count ?? 0; if (!r) continue; const k = Math.floor((x.final_context_usage_percentage ?? 0) / 10) * 10; const v = (b[k] ??= { c: 0, r: 0, n: 0 }); v.c += credit(x); v.r += r; v.n++; } }
+  console.log(`agent ${agent}: context-bucket  turns  credits  requests  credits/request`);
+  for (const [k, v] of Object.entries(b).sort((x, y) => x[0] - y[0])) console.log(`${String(k).padStart(3)}%  ${String(v.n).padStart(5)} ${String(Math.round(v.c)).padStart(7)} ${String(v.r).padStart(8)}  ${(v.c / v.r).toFixed(2)}`);
+  process.exit(0);
+}
 let all = [];
 for (const { f } of pick) {
   const j = JSON.parse(fs.readFileSync(path.join(dir, f), "utf8")); const sa = j.session_state?.agent_name ?? "?"; const m = j.session_state?.conversation_metadata;
