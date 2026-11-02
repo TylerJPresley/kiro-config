@@ -63,3 +63,9 @@ test("no warning when only one session is live in the folder", () => {
   assert.match(out, /context 31\.0% {2}\(HANDOFF-NOW\)/);
   assert.doesNotMatch(out, /share this folder/);
 });
+
+test("a session id shorter than 8 characters is rejected, not prefix-matched", () => {
+  const out = run(fakeHome(two()), ["--session", "a"]);
+  assert.match(out, /not found/);
+  assert.doesNotMatch(out, /12\.0%/);
+});

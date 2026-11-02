@@ -63,7 +63,7 @@ const wanted = (process.argv.includes("--session") ? process.argv[process.argv.i
 let current = null;
 let note = "";
 if (wanted) {
-  const hit = files.find(({ f }) => f.startsWith(wanted) || wanted.startsWith(f.slice(0, -5)));
+  const hit = wanted.length >= 8 ? files.find(({ f }) => f.startsWith(wanted) || wanted.startsWith(f.slice(0, -5))) : null; // 8+ chars: a short id must not prefix-match
   const j = hit && loadState(hit.f);
   if (!j) {
     // Never fall back to another session's number.
