@@ -19,7 +19,7 @@ One global agent set (`~/.kiro/agents/`) serves every project and is project-neu
 | researcher | `_internal/research/**` | Network read-only. Cites source + date. Never guesses. |
 | blueprint | `blueprint.md`, `*-blueprint.md` | Change control: propose, confirm, write. |
 | implementer | workspace, minus protected paths | Protected: specs, `AGENTS.md`, thinking folder, `.git/`, `.kiro/`, `.github/`, `node_modules/`, reference-only dirs. |
-| reviewer | nothing | Fresh context. PASS or FAIL ranked by severity, against the spec. |
+| reviewer | `_internal/plans/*.review.md` | Fresh context. Verdict file: first line PASS or FAIL, then findings ranked by severity, against the spec. |
 | security-reviewer | nothing | Fresh context. Tool output over memory for vulnerabilities and licenses. |
 | documenter | `README.md`, `FEATURES.md`, `PLUGINS.md`, `CHANGELOG.md`, `docs/**` | Never specs or source. |
 

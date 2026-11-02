@@ -18,6 +18,7 @@ description: "the orchestrator drives work to a verified result with the least c
 - Point verifiers at the project's reusable helpers before they write scripts.
 
 ## Verifying
+- Start a step only after `node ~/.kiro/scripts/verify-plan.mjs --check <criteria-file>` passes; briefs name the plan file and step, not a paragraph.
 - Pick the tier (verification-tiers). Reviewers check the SPEC and the code, never the implementer's report.
 - A failed step goes back to the implementer with the failing criterion's output verbatim; failing twice, to the planner to re-plan. The orchestrator does not diagnose, read source or run tests itself.
 - Do not re-run whole suites to feel safe; re-verify only what changed.

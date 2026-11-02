@@ -144,7 +144,7 @@ The agent model is an **orchestrator** that plans with you and delegates to **sp
 | `blueprint` | Authors and maintains blueprint specs only (`blueprint.md`, `*-blueprint.md`); never touches code. |
 | `planner` | The designer: pins decisions and edge cases, sizes tiers, writes acceptance criteria as runnable commands, re-plans after a step fails twice. Writes only `_internal/plans/` and `_internal/proposals/`. |
 | `implementer` | Writes code to spec, runs the project gate locally; cannot spawn subagents or review its own work. |
-| `reviewer` | Read-only quality/correctness review in fresh context; returns PASS or FAIL-with-specifics. |
+| `reviewer` | Quality/correctness review in fresh context; writes only a verdict file `_internal/plans/<slug>.review.md` (first line PASS or FAIL, then findings by severity). |
 | `security-reviewer` | Read-only security and dependency-license audit in fresh context; writes nothing. |
 | `documenter` | Updates markdown docs (README, FEATURES, PLUGINS, CHANGELOG, `docs/`) to match what was built; not blueprints. |
 
