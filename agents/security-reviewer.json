@@ -48,7 +48,6 @@
   "allowedTools": [
     "read",
     "grep",
-    "glob",
-    "shell"
+    "glob"
   ]
 }

@@ -46,7 +46,6 @@
     "read",
     "grep",
     "glob",
-    "code",
-    "write"
+    "code"
   ]
 }

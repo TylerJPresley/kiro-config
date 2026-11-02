@@ -80,8 +80,6 @@
     "read",
     "grep",
     "glob",
-    "code",
-    "shell",
-    "write"
+    "code"
   ]
 }

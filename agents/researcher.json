@@ -12,6 +12,10 @@
     "write"
   ],
   "allowedTools": [
+    "read",
+    "grep",
+    "glob",
+    "write",
     "web_search",
     "web_fetch"
   ],
