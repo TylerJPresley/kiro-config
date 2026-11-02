@@ -142,6 +142,7 @@ The agent model is an **orchestrator** that plans with you and delegates to **sp
 | `orchestrator` | Team lead: holds the goal, plans with the user, delegates to the subagents below, verifies against the plan, iterates. Does not implement. |
 | `researcher` | Looks things up and reports with sources; network-enabled; never guesses. |
 | `blueprint` | Authors and maintains blueprint specs only (`blueprint.md`, `*-blueprint.md`); never touches code. |
+| `planner` | The designer: pins decisions and edge cases, sizes tiers, writes acceptance criteria as runnable commands, re-plans after a step fails twice. Writes only `_internal/plans/` and `_internal/proposals/`. |
 | `implementer` | Writes code to spec, runs the project gate locally; cannot spawn subagents or review its own work. |
 | `reviewer` | Read-only quality/correctness review in fresh context; returns PASS or FAIL-with-specifics. |
 | `security-reviewer` | Read-only security and dependency-license audit in fresh context; writes nothing. |

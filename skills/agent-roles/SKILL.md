@@ -14,7 +14,8 @@ One global agent set (`~/.kiro/agents/`) serves every project and is project-neu
 ## Roles
 | Agent | Writes | Notes |
 |---|---|---|
-| orchestrator | thinking folder (`_internal/**`) | Only agent that spawns subagents. Plans, delegates, verifies. Does not implement. |
+| orchestrator | thinking folder (`_internal/**`) | Only agent that spawns subagents. Air traffic controller: routes by the plan, runs verify scripts. Does not implement, design, debug or read source. |
+| planner | `_internal/plans/**`, `_internal/proposals/**` | The only designer. Pins decisions, edge cases, tiers and acceptance criteria as commands; re-plans after a step fails twice. Never implements. |
 | researcher | `_internal/research/**` | Network read-only. Cites source + date. Never guesses. |
 | blueprint | `blueprint.md`, `*-blueprint.md` | Change control: propose, confirm, write. |
 | implementer | workspace, minus protected paths | Protected: specs, `AGENTS.md`, thinking folder, `.git/`, `.kiro/`, `.github/`, `node_modules/`, reference-only dirs. |

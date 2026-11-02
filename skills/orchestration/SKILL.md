@@ -13,13 +13,13 @@ description: "the orchestrator drives work to a verified result with the least c
 
 ## Briefs (every one)
 - "Wrap EVERY shell command in `timeout`; leave no background processes; no other agents work in parallel; stop and report at ~15 minutes per step." Say plainly that earlier uncommitted work is the orchestrator's own.
-- A reply budget ("reply in ≤ N lines"), the pinned decisions, the exact gate command, and "report what is NOT done; never report success for work that is not in the tree".
+- A reply budget ("reply in ≤ N lines"), the pinned decisions (from the plan, never invented by the orchestrator), the exact gate command, and "report what is NOT done; never report success for work that is not in the tree".
 - Bugs: failing test first, then the fix. Features: a test that drives the real path.
 - Point verifiers at the project's reusable helpers before they write scripts.
 
 ## Verifying
 - Pick the tier (verification-tiers). Reviewers check the SPEC and the code, never the implementer's report.
-- Reproduce the key fact of a hard bug yourself before briefing a retry.
+- A failed step goes back to the implementer with the failing criterion's output verbatim; failing twice, to the planner to re-plan. The orchestrator does not diagnose, read source or run tests itself.
 - Do not re-run whole suites to feel safe; re-verify only what changed.
 - If a stage stalls, kill leftovers, narrow the brief and split it.
 
