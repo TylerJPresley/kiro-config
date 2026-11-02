@@ -41,5 +41,12 @@
       ]
     }
   },
-  "model": "claude-sonnet-5.5"
+  "model": "claude-sonnet-5.5",
+  "allowedTools": [
+    "read",
+    "grep",
+    "glob",
+    "code",
+    "write"
+  ]
 }

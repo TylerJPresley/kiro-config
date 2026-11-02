@@ -83,5 +83,13 @@
       ]
     }
   },
-  "model": "auto"
+  "model": "auto",
+  "allowedTools": [
+    "read",
+    "grep",
+    "glob",
+    "code",
+    "write",
+    "shell"
+  ]
 }
