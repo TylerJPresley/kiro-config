@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Context usage of the CURRENT Kiro session (newest session-state file, by mtime, matching cwd).
-// usage: node ~/.kiro/scripts/ctx.mjs [--cwd DIR]
+// usage: node ~/.kiro/scripts/ctx.mjs [--session ID] [--cwd DIR]   (session defaults to $KIRO_SESSION_ID)
 //
 // Reports ONLY the current session. If its percentage is not yet known (a fresh session
 // stores null until the server reports usage), it prints "unknown (new session)" and treats
@@ -57,19 +57,36 @@ try {
   process.exit(0);
 }
 
-// The current session = newest session-state file for this cwd (fall back to newest overall).
+// The current session, in order: --session ID, then $KIRO_SESSION_ID (Kiro sets it for every shell call),
+// then the newest session-state file for this cwd (a guess: several sessions can share a folder).
+const wanted = (process.argv.includes("--session") ? process.argv[process.argv.indexOf("--session") + 1] : process.env.KIRO_SESSION_ID) || "";
 let current = null;
-let newestAny = null;
-for (const { f } of files) {
-  const j = loadState(f);
-  if (!j) continue;
-  if (!newestAny) newestAny = { f, j };
-  if (j.cwd === cwd) {
-    current = { f, j };
-    break;
+let note = "";
+if (wanted) {
+  const hit = files.find(({ f }) => f.startsWith(wanted) || wanted.startsWith(f.slice(0, -5)));
+  const j = hit && loadState(hit.f);
+  if (!j) {
+    // Never fall back to another session's number.
+    console.log(`context: unknown (session ${wanted.slice(0, 8)} not found)`);
+    process.exit(0);
   }
+  current = { f: hit.f, j };
+} else {
+  let newestAny = null;
+  for (const { f } of files) {
+    const j = loadState(f);
+    if (!j) continue;
+    if (!newestAny) newestAny = { f, j };
+    if (j.cwd === cwd) {
+      current = { f, j };
+      break;
+    }
+  }
+  if (!current) current = newestAny;
+  // Live sessions have a .lock file; several in one folder make the guess above unreliable.
+  const live = files.filter(({ f }) => fs.existsSync(path.join(dir, f.replace(/\.json$/, ".lock"))) && loadState(f)?.cwd === cwd).length;
+  if (live > 1) note = `  [guess: ${live} live sessions share this folder; pass --session ID]`;
 }
-if (!current) current = newestAny;
 
 if (!current) {
   console.log("context: unknown (no session state found)");
@@ -80,10 +97,10 @@ const pct = pctOf(current.j);
 const id = current.f.slice(0, 8);
 if (pct == null) {
   // Not known yet for THIS session — proceed; do not borrow another session's number.
-  console.log(`context unknown (new session — no usage reported yet)  (ok)  session ${id}  model ${modelOf(current.j)}`);
+  console.log(`context unknown (new session — no usage reported yet)  (ok)  session ${id}  model ${modelOf(current.j)}${note}`);
   process.exit(0);
 }
 
 const level = pct >= 30 ? "HANDOFF-NOW" : pct >= 25 ? "OFFER-RESET" : "ok";
-console.log(`context ${pct.toFixed(1)}%  (${level})  session ${id}  model ${modelOf(current.j)}`);
+console.log(`context ${pct.toFixed(1)}%  (${level})  session ${id}  model ${modelOf(current.j)}${note}`);
 process.exit(0);
