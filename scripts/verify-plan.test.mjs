@@ -41,3 +41,21 @@ test("a timed-out criterion fails", () => {
 test("a malformed line is a usage error", () => {
   assert.equal(run("no separator here\n").status, 2);
 });
+
+test("--check validates the file without running any command", () => {
+  const r = run("a :: exit 1\nb :: exit 1\n", ["--check"]);
+  assert.equal(r.status, 0);
+  assert.match(r.stdout, /ok: 2 criteria/);
+  assert.equal(r.log, "");
+});
+
+test("--check rejects an empty file, a duplicate name, an empty command", () => {
+  assert.equal(run("# only a comment\n", ["--check"]).status, 2);
+  assert.equal(run("a :: true\na :: true\n", ["--check"]).status, 2);
+  assert.equal(run("a ::  \n", ["--check"]).status, 2);
+});
+
+test("--check before the file name still finds the file", () => {
+  const r = run("a :: true\n", ["--check"]);
+  assert.equal(r.status, 0);
+});
