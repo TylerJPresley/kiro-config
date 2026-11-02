@@ -84,6 +84,6 @@ if (pct == null) {
   process.exit(0);
 }
 
-const level = pct >= 45 ? "STOP-LARGE-RUNS" : pct >= 40 ? "WRAP-UP" : "ok";
+const level = pct >= 30 ? "HANDOFF-NOW" : pct >= 25 ? "OFFER-RESET" : "ok";
 console.log(`context ${pct.toFixed(1)}%  (${level})  session ${id}  model ${modelOf(current.j)}`);
 process.exit(0);

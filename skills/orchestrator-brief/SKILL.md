@@ -13,7 +13,7 @@ Intent: a brief an agent can execute without guessing, stalling or over-reportin
 4. **Pinned decisions** — numbered; "if the code contradicts one, finish the rest and report a CONFLICT".
 5. **Tests** — failing test first for bugs; the acceptance tests; the real path (model -> tool -> effect).
    Name a template test that already drives the real path. Require a mutation result: break the production code, show the new test FAIL, restore. A test that only asserts on literals it builds itself cannot fail; the orchestrator rejects it by reading the test, never by trusting the report.
-6. **Gate** — `_internal/tools/gate.sh` (project helper) or the project's gate; targeted tests for steps, one full run at the end.
+6. **Gate** — the project's gate script (named in AGENTS.md); targeted tests for steps, one full run at the end.
 7. **Reply budget** — "reply in <= N lines": files changed, each item done / NOT done, tests added, what remains.
 
 Verifier briefs add: use a scratch environment, cap real-model turns, clean up, finish with `git status`.
