@@ -2,13 +2,12 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import os from "node:os";
 import { spawnSync } from "node:child_process";
 
 const tool = path.join(path.dirname(new URL(import.meta.url).pathname), "verify-plan.mjs");
-const scratch = path.join(path.dirname(new URL(import.meta.url).pathname), "..", "scratch");
 const run = (content, extra = []) => {
-  fs.mkdirSync(scratch, { recursive: true });
-  const dir = fs.mkdtempSync(path.join(scratch, "verify-plan-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "verify-plan-"));
   const f = path.join(dir, "criteria.txt");
   fs.writeFileSync(f, content);
   const r = spawnSync("node", [tool, f, "--log", path.join(dir, "out.log"), ...extra], { encoding: "utf8" });

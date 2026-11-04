@@ -2,21 +2,20 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import os from "node:os";
 import { spawnSync } from "node:child_process";
 
 const here = path.dirname(new URL(import.meta.url).pathname);
 const tool = path.join(here, "ctx.mjs");
-const scratch = path.join(here, "..", "scratch");
 
 // A fake HOME with session-state files: [{ id, cwd, pct, mtime (seconds ago), lock }].
 const fakeHome = (sessions) => {
-  fs.mkdirSync(scratch, { recursive: true });
-  const home = fs.mkdtempSync(path.join(scratch, "ctx-"));
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), "ctx-"));
   const dir = path.join(home, ".kiro/sessions/cli");
   fs.mkdirSync(dir, { recursive: true });
   for (const s of sessions) {
     const f = path.join(dir, `${s.id}-0000-0000-0000-000000000000.json`);
-    const j = { session_id: s.id, cwd: s.cwd, session_state: { agent_name: "orchestrator", conversation_metadata: s.pct == null ? {} : { last_context_usage: { percentage: s.pct, model_id: "m" } } } };
+    const j = { session_id: s.id, cwd: s.cwd, session_state: { agent_name: "director", conversation_metadata: s.pct == null ? {} : { last_context_usage: { percentage: s.pct, model_id: "m" } } } };
     fs.writeFileSync(f, JSON.stringify(j));
     const t = new Date(Date.now() - s.ago * 1000);
     fs.utimesSync(f, t, t);

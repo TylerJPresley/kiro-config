@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Where do Kiro tokens/credits go?  usage: node ~/.kiro/scripts/kiro-usage.mjs [session-id|latest|all] [--top N]
-// Views: `by-session` (top sessions, by working directory, by day) and `by-context [--agent NAME]` (credits per request by context bucket; default orchestrator).
+// Views: `by-session` (top sessions, by working directory, by day) and `by-context [--agent NAME]` (credits per request by context bucket; default director).
 // Reads ~/.kiro/sessions/cli/<id>.json (user_turn_metadatas) - no model, no network.
+// The by-context view defaults to the director agent (the top-level session that routes work).
 import fs from "node:fs"; import path from "node:path"; import os from "node:os";
 const dir = path.join(os.homedir(), ".kiro/sessions/cli");
 const arg = process.argv[2] && !process.argv[2].startsWith("--") ? process.argv[2] : "latest";
@@ -25,7 +26,7 @@ if (arg === "by-session") {
   process.exit(0);
 }
 if (arg === "by-context") {
-  const agent = process.argv.includes("--agent") ? process.argv[process.argv.indexOf("--agent") + 1] : "orchestrator"; const b = {};
+  const agent = process.argv.includes("--agent") ? process.argv[process.argv.indexOf("--agent") + 1] : "director"; const b = {};
   for (const { f } of files) { let j; try { j = JSON.parse(fs.readFileSync(path.join(dir, f), "utf8")); } catch { continue; } if (j.session_state?.agent_name !== agent || j.parent_session_id) continue;
     for (const x of turnsOf(j)) { const r = x.total_request_count ?? 0; if (!r) continue; const k = Math.floor((x.final_context_usage_percentage ?? 0) / 10) * 10; const v = (b[k] ??= { c: 0, r: 0, n: 0 }); v.c += credit(x); v.r += r; v.n++; } }
   console.log(`agent ${agent}: context-bucket  turns  credits  requests  credits/request`);
@@ -70,7 +71,7 @@ const mb = (n) => (n / 1e6).toFixed(1);
   }
   const t = (k) => subs.reduce((s, x) => s + x[k], 0);
   console.log(`\nMODEL CALLS from transcripts (measured; credits NOT recorded for subagents):  calls  out-MB  ctx-in-MB`);
-  console.log(`  orchestrator (picked sessions)        ${String(main.calls).padStart(7)}  ${mb(main.out).padStart(6)}  ${mb(main.inn).padStart(9)}`);
+  console.log(`  director (picked sessions)            ${String(main.calls).padStart(7)}  ${mb(main.out).padStart(6)}  ${mb(main.inn).padStart(9)}`);
   console.log(`  subagents (${subs.length} sessions, parent_session_id set)${" ".repeat(Math.max(1, 5 - String(subs.length).length))}${String(t("calls")).padStart(7)}  ${mb(t("out")).padStart(6)}  ${mb(t("inn")).padStart(9)}`);
   for (const x of [...subs].sort((a, b) => b.inn - a.inn).slice(0, 5)) console.log(`    ${x.id} calls ${String(x.calls).padStart(4)}  out ${mb(x.out).padStart(5)}MB  ctx-in ${mb(x.inn).padStart(6)}MB  ${x.title}`);
 }
