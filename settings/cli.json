@@ -1,6 +1,6 @@
 {
   "chat.defaultModel": "auto",
   "mcp.loadedBefore": true,
-  "chat.defaultAgent": "orchestrator",
+  "chat.defaultAgent": "director",
   "chat.disableTrustAllConfirmation": true
 }
