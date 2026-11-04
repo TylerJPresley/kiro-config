@@ -1,64 +1,31 @@
 # Kiro CLI config (`~/.kiro`)
 
-A shared, personal configuration for the [Kiro](https://kiro.dev) CLI. It is the contents of one developer's global `~/.kiro` directory, published so others can see how a real setup is organized and borrow from it. It bundles four things that shape how Kiro behaves: **steering** (always-on rules), **agents** (an orchestrator plus specialized subagents), **skills** (on-demand playbooks), and **helper scripts**. It's for Kiro users who want a worked example of steering, multi-agent delegation, and permission boundaries to optimize their own experience.
+A shared, personal configuration for the [Kiro](https://kiro.dev) CLI. It is the contents of one developer's global `~/.kiro` directory, published so others can see how a real setup is organized and borrow from it. It bundles steering (always-on rules), agents (a Director plus specialists), skills (on-demand playbooks), and scripts (deterministic helpers). It's for Kiro users who want a worked example of steering, multi-agent delegation, and permission boundaries to optimize their own experience.
 
-This repo is the global config itself, not a project built with Kiro. There is intentionally **no `AGENTS.md`** here — that file belongs in a *project* repo to supply project facts (gate commands, spec files, protected paths). The config in this repo stays project-neutral.
+This repo is the global config itself, not a project built with Kiro. There is intentionally **no `AGENTS.md`** here — that file belongs in a project repo to supply project facts (gate commands, blueprints, protected paths). The config in this repo stays project-neutral.
 
 ## Warning
 
 This config runs with the training wheels off. `settings/cli.json` sets `chat.disableTrustAllConfirmation: true`, which removes the confirmation Kiro CLI normally shows before trusting every tool. Review that file and decide for yourself before you copy this setup.
 
-> "I run with the training wheels off. We do it right the first time."
+## The model: Director routes, specialists do, scripts verify
 
-## The idea behind it
+Work flows through one loop. The Director holds the goal, routes each step to the right specialist by capability, and decides done from script evidence. Specialists have narrow roles and locked write scopes: the Architect owns blueprints; the Planner designs before anyone builds; the Implementer builds code; the Reviewer checks independent of the builder; the Researcher looks up facts with sources; the Documenter keeps the README and docs true. Scripts verify and enumerate; models decide and design.
 
-The whole config is built around two habits: **drive work through one orchestration loop**, and **think in systems before touching anything non-trivial**. Everything else — the agent roster, the steering rules, the skills, the scripts — exists to make those two habits cheap and hard to skip.
+The loop stays small: small work (one or two files, no design decision, nothing depending on it) is just done and checked by one script. Larger work is planned first by the Planner, then built by the Implementer, then verified by the Reviewer independent of the builder (so the agent that produced the work never verifies it). If a step fails, fix the weakest point and re-check only that. If the same approach fails twice, change approach and say so. When a feature closes, the Director routes the real-environment check, the changelog update, and the tag.
 
-### The orchestration loop
+Work is spec-driven: the blueprint defines what is built, and the code follows it. The Architect runs discovery with the owner to fill the blanks in a blueprint before building starts. Plans are divided at seams that each leave the project working (each seam is a commit). Features and plans track changes to the blueprints. Build progress lives in `_internal/` (the thinking folder) and the handoff, which new sessions read to resume with zero context.
 
-One agent, the **orchestrator**, holds the goal and never implements. It runs every task on a single loop — **Plan → Execute → Verify → Iterate/Stop** — sized to the task: a trivial request gets a one-line plan, a subsystem gets the full treatment. The loop is shrunk, never skipped.
+## Rules always loaded
 
-- **Plan.** State what is asked and what "done" looks like. Read the real code and docs first; never assume a feature is absent. Reuse what exists instead of building a parallel path.
-- **Execute.** Delegate by *capability*, not by name: code goes to the implementer, specs to the blueprint agent, docs to the documenter, unknown facts to the researcher (with sources required). Independent work runs in parallel; stages chain only when one needs another's output. Every brief carries pinned decisions, a hard time limit, a reply budget, "tests first," and "report what is NOT done."
-- **Verify.** Depth matches risk (see `verification-tiers`). **The agent that produced the work never verifies it** — reviewers read the spec and the code in fresh context, not the implementer's report. Re-verify only what changed; no re-running whole suites "to feel safe."
-- **Iterate/Stop.** If verification fails, fix the weakest point and re-check only that. If the same approach fails twice, diagnose the root cause and change approach — never loop silently.
+Steering files are always-on rules Kiro reads every session. They fit into a few topics: how work flows (plan-and-verify, features, specs, definition-of-done, quality-testing, solution-standards); how agents think and communicate (confidence-and-conflicts, decision-rights, concise, framing, discovery); safety and security (fix-forward, security); how projects work (project-contract, project-files, git-standards); and how sessions work (session-tracking, thinking-folder, script-first, workflow-patterns).
 
-This is why the agents have narrow roles and locked-down write scopes: the loop only works if work can be delegated to a specialist, graded by someone else, and trusted to stay inside its boundary.
+Counts: `ls steering | wc -l` returns 20 steering files. Steering files are short; the lint checks they do not repeat 60+ character lines across files. Each file has an Intent/Applies header.
 
-### Thinking in systems
-
-Before any non-trivial change, the Plan step produces a short **system map** (the `systems-thinking` skill) — about ten lines, every line citing evidence (`file:line`, command output, or an explicit "unknown"):
-
-- **Purpose** — what changes and the measure that shows it worked.
-- **Boundary** — in scope, out of scope, who owns the edge.
-- **Connections** — every caller, consumer, test, doc, config, and permission that holds the same fact, enumerated with tools, not memory.
-- **Loops & delays** — what reinforces or balances the change, and what won't show up until later (builds, caches, resumed sessions).
-- **Second-order effects** — what else moves, who relies on today's behavior.
-- **Leverage point** — the smallest change at the right place; a rule or an information flow beats brute effort inside the existing structure.
-- **Predicted touches** — the files you expect to change.
-
-After the work, predicted touches are compared against the real `git diff`. Each surprise is a connection the map missed; a miss that recurs gets recorded as a lesson and promoted into a durable rule. The map turns "I changed a file" into "I understood what the change was connected to."
-
-### The philosophy, inferred
-
-Read end to end, the setup encodes a consistent point of view:
-
-- **Judgment is the scarce resource; spend it deliberately.** Mechanical work (counting, linting, enumerating) goes to deterministic scripts. Models are spent on decisions and design, not on work a program can do in seconds.
-- **Evidence over confidence.** Nothing is "done" on a feeling. Claims carry fresh evidence — a command, a test, a diff — and what was *not* verified is stated plainly.
-- **Separation of powers.** The planner doesn't implement, the implementer doesn't grade its own work, and each agent writes only inside a scope that denies secrets and shared state. Correctness comes from structure, not good intentions.
-- **The smallest correct change.** Prefer the simplest solution that fits the real target: fix root causes, reuse what exists, resist over-engineering and defensive code that isn't needed yet.
-- **Specs lead, code follows.** Blueprints are the source of truth; code that drifts from the spec is a defect, not a choice.
-- **Protect what already exists.** Destructive or irreversible actions stop and ask first; the default is to fix forward, not roll back.
-- **The system learns.** Recurring mistakes are recorded the second time they appear and, by the third, promoted to the cheapest durable form — a script, a skill, or a steering line — so the config gets sharper with use.
-
-In short: a small, auditable set of rules that make the *good* path the *easy* path, so an agent produces work that is planned, delegated, verified, and reversible — by default rather than by reminder.
-
-### Concise, checked by script
-
-The always-on files are kept short, and a script checks each file's size. Anything countable or checkable is done by a program, so it gives the same answer every time. The model's own judgment is still probabilistic, so the config limits where that judgment is trusted and requires evidence for claims.
+The always-on files stay short so that anything countable or checkable is done by a program, giving the same answer every time. The model's own judgment is still probabilistic, so the config limits where that judgment is trusted and requires evidence for claims.
 
 **Mechanically enforced** (a script or permission rule fails if it is broken):
-- `scripts/steering-lint.mjs` caps each always-on steering file at 2,200 bytes and exits non-zero if one is over. It also prints the total size of the set (bytes, and tokens estimated as bytes ÷ 4) for information; the total is not capped.
+- `scripts/steering-lint.mjs` no longer caps per-file size; it prints the total size of the always-on set (bytes, and tokens estimated as bytes ÷ 4) for information, and the total is not capped.
 - Skill descriptions are capped at 320 characters. They are the only part of a skill that is always loaded; the body loads on demand.
 - The lint fails when a line of 60+ characters appears verbatim in two steering files. It does not catch a rule that has been reworded.
 - `lessons.mjs` and `steering-lint.mjs` run with no model: same input, same output.
@@ -91,8 +58,8 @@ Global steering and skills are always loaded. When you start Kiro inside a proje
 
 ```
 ~/.kiro/
-├── steering/     always-on rules (Intent/Applies/Prevents), loaded every session
-├── agents/       agent definitions (orchestrator + specialized subagents) as JSON
+├── steering/     always-on rules (Intent/Applies), loaded every session
+├── agents/       agent definitions (Director + specialists) as JSON
 ├── skills/       on-demand playbooks, one SKILL.md per skill directory
 ├── scripts/      helper scripts (Node .mjs), run manually
 └── settings/     local CLI/app state (mostly gitignored)
@@ -100,7 +67,7 @@ Global steering and skills are always loaded. When you start Kiro inside a proje
 
 | Directory | Purpose |
 |-----------|---------|
-| `steering/` | Markdown rules that are always in context; each is small and follows an Intent / Applies / Prevents shape. |
+| `steering/` | Markdown rules that are always in context; each is small and follows an Intent / Applies shape. |
 | `agents/`   | JSON agent definitions, including tool allow-lists and write/shell permission boundaries. |
 | `skills/`   | Playbooks loaded on demand by name; each lives in its own folder as `SKILL.md`. |
 | `scripts/`  | Deterministic Node helpers (lessons tracker, steering linter) run with `node`. |
@@ -110,87 +77,115 @@ Global steering and skills are always loaded. When you start Kiro inside a proje
 
 ## Steering
 
-Steering files are always-on rules Kiro reads every session. Each states its **Intent** (the goal), **Applies** (when it's in force), and **Prevents** (the failure it heads off), each kept short. The steering files:
+Steering files are always-on rules Kiro reads every session. Each states its **Intent** (the goal), **Applies** (when it's in force), and limits plainly, each kept short. The steering files:
 
 | File | Intent (one line) |
 |------|-------------------|
-| `plan-execute-verify.md` | Keep every task on one Plan → Execute → Verify → Iterate/Stop loop, sized to the task. |
+| `plan-and-verify.md` | Every task stays on one loop so work is planned, checked against the plan, and stopped on evidence. |
+| `features.md` | Work is organized into self-standing features, each carried by one plan with a clear outcome. |
 | `definition-of-done.md` | No completion claim without evidence that the result meets the plan. |
-| `verification-tiers.md` | Match verification depth to risk, so effort isn't wasted and risk isn't missed. |
 | `quality-testing.md` | Tests prove behavior; failures are investigated, not patched around. |
-| `solution-standards.md` | The simplest correct solution that fits the real target. |
+| `solution-standards.md` | The smallest correct solution that fits the real target. |
 | `confidence-and-conflicts.md` | Stop guessing on real unknowns, stop burning cycles on small ones; surface real conflicts. |
-| `destructive-actions.md` | Protect existing work and shared systems from irreversible changes. |
-| `blueprints.md` | Specs are first-class and the source of truth; code follows them, never the reverse. |
+| `specs.md` | Work is spec-driven, so the blueprint defines what is built and the code follows it. |
 | `project-contract.md` | Agents stay project-neutral; the project supplies its own facts in its own files. |
-| `project-files.md` | Each concern has one home (README, CONTRIBUTING, AGENTS), so a rule lives in one place and cannot drift. |
-| `git-standards.md` | Small, tested, readable history in every project; the project's CONTRIBUTING.md overrides these defaults. |
-| `session-tracking.md` | Any session resumes from zero context without writing into the project. |
-| `thinking-folder.md` | One common place (`_internal/`) for agent and project working notes. |
+| `project-files.md` | Each concern has one home, so a rule lives in one place and stays consistent. |
+| `git-standards.md` | Small, tested, readable history in every project; each commit stands on its own. |
+| `session-tracking.md` | The handoff carries state, so a new session resumes where the last one stopped with zero context. |
+| `thinking-folder.md` | Working files live in one place, `_internal/`, so a later session reuses them instead of paying to recreate them. |
 | `script-first.md` | Mechanical work is done by deterministic scripts; models are spent on judgment. |
 | `workflow-patterns.md` | Efficient, non-stalling tool use (read before write, diagnose before retry). |
-| `concise.md` | Short, decision-useful replies. |
+| `concise.md` | Replies read clearly on the first pass, leading with the answer in plain, complete sentences. |
+| `discovery.md` | Before building anything non-trivial, the blanks in the blueprint are filled with the owner's intent. |
+| `decision-rights.md` | The owner decides what matters to him, and the agent decides the rest and reports it. |
+| `framing.md` | Every rule, spec and document states direction by what we want and states limits plainly. |
+| `fix-forward.md` | Existing work and shared systems are preserved by correcting forward. |
+| `security.md` | Every agent works secure by default, with least privilege and a check at each trust boundary. |
 
-> The steering `.md` files are listed above (`systems-thinking` lives as a skill, not steering). Check with `ls steering/`; the set evolves.
+All 20 directories in `steering/` are listed above; check with `ls steering/`. The set evolves.
 
 ## Agents
 
-The agent model is an **orchestrator** that plans with you and delegates to **specialized subagents**. The orchestrator holds the goal and verifies; it does not implement. Each subagent has a narrow role and a tool allow-list.
+The agent model is a **Director** that holds the goal and routes work, plus **specialized agents** that each own one capability. The Director verifies; it does not implement. Each specialist has a narrow role and a tool allow-list.
 
-| Agent | Role |
-|-------|------|
-| `orchestrator` | Team lead: holds the goal, plans with the user, delegates to the subagents below, verifies against the plan, iterates. Does not implement. |
-| `researcher` | Looks things up and reports with sources; network-enabled; never guesses. |
-| `blueprint` | Authors and maintains blueprint specs only (`blueprint.md`, `*-blueprint.md`); never touches code. |
-| `planner` | The designer: pins decisions and edge cases, sizes tiers, writes acceptance criteria as runnable commands, re-plans after a step fails twice. Writes only `_internal/plans/` and `_internal/proposals/`. |
-| `implementer` | Writes code to spec, runs the project gate locally; cannot spawn subagents or review its own work. |
-| `reviewer` | Quality/correctness review in fresh context; writes only a verdict file `_internal/plans/<slug>.review.md` (first line PASS or FAIL, then findings by severity). |
-| `security-reviewer` | Read-only security and dependency-license audit in fresh context; writes nothing. |
-| `documenter` | Updates markdown docs (README, FEATURES, PLUGINS, CHANGELOG, `docs/`) to match what was built; not blueprints. |
+`ls agents | wc -l` returns 8 agents: architect, director, documenter, implementer, planner, researcher, reviewer, security-reviewer.
 
-`agent_config.json.example` is a template only — it is **not** loaded (it lacks the `.json` extension that Kiro loads).
+| Agent | Role | Writes |
+|-------|------|--------|
+| `director` | Team lead: holds the goal, routes work to the right specialist by capability, verifies by script evidence. Does not implement. | `_internal/**` (handoff, decisions, lessons) |
+| `architect` | Owns blueprints (vision, architecture, components, specification via strata-bp) and runs discovery with the owner to fill blanks. Writes blueprint markdown only. | `blueprint.md`, `*-blueprint.md` |
+| `planner` | Designs: turns outcomes into plans with pinned decisions, criteria, and seams. Re-plans after a step fails twice. | `_internal/plans/**`, `_internal/proposals/**` |
+| `implementer` | Builds to spec, tests first, runs the project gate, commits at each seam and tags to close features. | Source, tests, commits and feature/release tags; denied: `blueprint.md`, `AGENTS.md`, `.kiro/**`, `_internal/**` and secrets |
+| `reviewer` | Independent check on finished work. Judges against plan and blueprints in fresh context; runs real-environment checks when needed. | `_internal/plans/<slug>.review.md` (verdict: PASS or FAIL, then findings) |
+| `security-reviewer` | Audits dependencies and code for security and licenses in fresh context, read-only. Judges only what the audit script flags. | `_internal/plans/<slug>.security.md` (risk report: PASS, FAIL or ESCALATE) |
+| `researcher` | Investigates assigned questions with sources; network-enabled; reports gaps when sources are missing. | `_internal/research/**` (in research-cache format) |
+| `documenter` | Maintains README, CONTRIBUTING, LICENSE, CHANGELOG, `docs/`, and AGENTS.md (only when directed). Keeps them true to what was built. | Markdown docs only (not blueprints); AGENTS.md only on direction |
 
-**Permission boundary.** Each agent's JSON pins `allowedPaths`/`deniedPaths` for writes and allow/deny lists for shell:
-
-- The orchestrator writes only under `_internal/**` (working notes, handoff, backups, scratch).
-- The researcher writes only under `_internal/research/**`; the blueprint agent writes only blueprint markdown; the documenter writes only docs; the implementer writes source but is denied `blueprint.md`, `AGENTS.md`, `.kiro/**`, `_internal/**`, and more.
-- Every agent denies writing and reading secret paths — `.env`, `*.pem`, `*.key`, `*.p12/pfx/jks`, `id_rsa*`/`id_ed25519*`, `credentials.json`, `.aws/`, `.ssh/`, `.gnupg/` — and denies destructive shell (`sudo`, `rm -r`, `git push`/`reset --hard`/`clean`, reads of secret files).
+**Permission boundary.** Each agent's JSON pins `allowedPaths` and `deniedPaths` for writes and allow/deny lists for shell. Every agent denies writing and reading secrets — `.env`, `*.pem`, `*.key`, `*.p12/pfx/jks`, `id_rsa*`/`id_ed25519*`, `credentials.json`, `.aws/`, `.ssh/`, `.gnupg/` — and denies destructive shell (`sudo`, `rm -r`, `git push --force`, `git reset --hard`, `git clean -f`).
 
 ## Skills
 
-Skills are playbooks loaded on demand by name (not always-on). Each is a `SKILL.md` with a short `description`. There are **17** skills:
+Skills are playbooks loaded on demand by name (not always-on). Each is a `SKILL.md` with a short `description`. `ls skills | wc -l` returns 34 skills:
 
 | Skill | Purpose (one line) |
 |-------|--------------------|
-| `agent-roles` | Every agent knows what it may change, and the agent that produced work never verifies it. |
-| `analysis-requirements` | Requirements come from evidence and trace to behavior, so nothing is built on assumption. |
-| `architecture-design` | Boundaries and decisions are explicit, sized to the problem, and justified. |
-| `backend-engineering` | Services fail explicitly, validate at the boundary, and are tested where they meet the world. |
-| `blueprint-editor` | How to work on blueprints under change control. |
-| `cloud-ops` | Infrastructure is code, changes are small and reversible, and secrets never live in code. |
+| `agent-roles` | Every agent knows what it may change, and a different agent verifies its work. |
+| `analysis-requirements` | Requirements come from evidence and trace to behavior. |
+| `architecture-design` | Boundaries and decisions are explicit, sized to the problem and justified. |
+| `backend-engineering` | Services validate at the boundary, fail explicitly and are tested where they meet the world. |
+| `briefing` | Template for briefs to specialists: pinned decisions, reply budget, tests first, and honest report of what remains. |
+| `cloud-ops` | Infrastructure is code, changes are small and reversible, and secrets stay out of code. |
+| `constraint-driven-development` | Encode a project's quality bar once as a written, mechanically-checkable contract. |
+| `context-engineering` | Manage the session's context for quality as well as size, and know when a fresh session pays off. |
 | `data-engineering` | Data has one authoritative form, a model before a store, and safe access. |
-| `orchestration` | The orchestrator drives work to a verified result with the least cost and time. |
-| `orchestrator-brief` | Template for briefs to implementer, reviewer, and verifier agents. |
-| `project-files` | Starter README.md, CONTRIBUTING.md and AGENTS.md for a project that lacks them. |
+| `diagnosing-bugs` | Reproduce the failure with a fast command, find the root cause, then fix it. |
+| `discovery` | Find the blanks in a blueprint and fill them with the owner's intent, asking in rounds. |
+| `efficient-workflow` | Keep the number of requests low by batching reads, searches and scripts. |
+| `grilling` | Stress-test a plan or design by working its open branches round by round. |
+| `orchestration` | The Director drives work to a verified result with the least cost and time. |
+| `planning` | Turn an approved outcome into a plan a feature stands on: pinned decisions, criteria, and seams. |
+| `portable-summary` | A summary that lets work move to another session, person or tool. |
 | `product-strategy` | Ship small, learn from real use, keep the code and the message consistent. |
-| `real-environment-verification` | How to verify a built product in a real environment without touching the user's own config. |
-| `reliability-engineering` | Reliability is a measured target, not an absolute, and failures are learned from. |
-| `security-review-brief` | Standing checklist for security-reviewing a change (read-only, time-boxed). |
+| `project-audit` | Cheap check of a new dependency and release-prep audit of dependencies and code risks. |
+| `project-files` | Starter README, CONTRIBUTING and AGENTS files for a project that lacks them. |
+| `real-environment-verification` | Verify what changed in a real environment without touching the owner's own configuration. |
+| `reliability-engineering` | Reliability is a measured target, and failures are learned from. |
+| `research-cache` | How to store and reuse research so a later session references it without redoing the work. |
+| `retro` | After a session, propose improvements to the agent setup. |
+| `security-review` | Standing checklist for reviewing a change for security. |
 | `security-trust` | Secure by default, least privilege, defense in depth. |
-| `systems-engineering` | CLI/system software behaves predictably in pipelines, shells, and operating environments. |
-| `systems-thinking` | Plan with a system map before changing anything non-trivial. |
-| `web-engineering` | Web work is fast, accessible, and discoverable by default. |
+| `strata-bp` | Structure documentation as four zoom layers (Vision, Architecture, Components, Specification). |
+| `systems-engineering` | Command-line and system software behaves predictably in pipelines, shells and operating environments. |
+| `systems-thinking` | Map a change's purpose, boundary, connections, loops, second-order effects and predicted touches before making it. |
+| `teach` | A teaching workspace that builds long-term retention through desirable difficulty and retrieval practice. |
+| `to-questionnaire` | Turn a blocking question into a questionnaire for the person who knows. |
+| `triage` | Sort incoming problems and requests into ordered, labelled work. |
+| `wait-what` | Re-explain one message in plain words. |
+| `web-engineering` | Web work is fast, accessible and discoverable by default. |
+| `writing-for-agents` | Write any document an agent reads so it guides execution at the lowest cost. |
 
-> All 17 directories in `skills/` are listed above; list them with `ls skills/`. The set evolves.
+All 34 directories in `skills/` are listed above; check with `ls skills/`. The set evolves.
 
 ## Scripts
 
 Deterministic Node helpers (require Node 18+). Run them from within the project you're working in, since they resolve paths against the current directory.
 
+`ls scripts/*.mjs | grep -v test | wc -l` returns 11 helper scripts. Counts include `.test.mjs` test files.
+
 | Script | What it does | Run |
 |--------|--------------|-----|
 | `lessons.mjs` | Tracks recurring patterns in `<cwd>/_internal/lessons.md`. `add` records a pattern or bumps its count, `promote` marks it promoted, `list [ready]` shows all (or only patterns seen ≥ 3 times, ready to promote). No model needed. | `node ~/.kiro/scripts/lessons.mjs add <id> "<pattern>" "<evidence>"`<br>`node ~/.kiro/scripts/lessons.mjs list ready` |
-| `steering-lint.mjs` | Lints the global steering and skills: each steering file has `Intent:`/`Applies:` lines and stays under the per-file size cap; each skill has valid frontmatter whose `name` matches its directory and a `description` under the length cap; flags rules duplicated across files. | `node ~/.kiro/scripts/steering-lint.mjs`<br>`node ~/.kiro/scripts/steering-lint.mjs --also path/to/project/.kiro` |
+| `steering-lint.mjs` | Lints the global steering and skills: each steering file has `Intent:`/`Applies:` lines (file size is not capped, only the total is printed); each skill has valid frontmatter whose `name` matches its directory and a `description` under the length cap; flags rules duplicated across files. | `node ~/.kiro/scripts/steering-lint.mjs`<br>`node ~/.kiro/scripts/steering-lint.mjs --also path/to/project/.kiro` |
+| `audit.mjs` | Gathers a project's dependency and security facts for the release audit (CVEs, license compliance, secrets check). | `node ~/.kiro/scripts/audit.mjs` |
+| `verify-plan.mjs` | Runs a plan's acceptance criteria and prints a short summary, with the full output in a log. | `node ~/.kiro/scripts/verify-plan.mjs <plan-slug>` |
+| `test-diff.mjs` | Lists the existing tests a change touched, so the Reviewer can compare them with what the plan named. | `node ~/.kiro/scripts/test-diff.mjs [--from HEAD~N] [--to HEAD]` |
+| `progress.mjs` | Keeps the handoff, the short note a new session starts from. | `node ~/.kiro/scripts/progress.mjs` |
+| `ctx.mjs` | Reports how full the session's context is. | `node ~/.kiro/scripts/ctx.mjs` |
+| `research-index.mjs` | Keeps the research cache's index current and checks that each entry has its origin and date. | `node ~/.kiro/scripts/research-index.mjs` |
+| `sync-skill.mjs` | Copies a skill from its source repo into `~/.kiro/skills` and detects drift. | `node ~/.kiro/scripts/sync-skill.mjs <skill> <source-url>` |
+| `kiro-usage.mjs` | Shows where tokens and credits go in a session. | `node ~/.kiro/scripts/kiro-usage.mjs` |
+| `install.mjs` | Puts this config on a machine and checks it. | `node ~/.kiro/scripts/install.mjs` |
+| `usage-breakdown.mjs` | Shows what fills a session's context. | `node ~/.kiro/scripts/usage-breakdown.mjs` |
 
 ## Install / use
 
