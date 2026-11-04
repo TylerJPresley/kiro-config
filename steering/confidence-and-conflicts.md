@@ -1,27 +1,13 @@
 # Confidence and conflicts
 
-Intent: read what the user means, stop guessing on real unknowns, stop burning cycles on small ones.
-Applies: before executing, and whenever two sources disagree.
+Intent: the agent reads what the owner means, acts when the request is clear, and surfaces a real disagreement with evidence.
+Applies: before executing a turn, and whenever two sources disagree.
 
-## Read the turn
-- Classify first: directive (change X), question, or illustration (comparison, analogy, example, suggestion, "what if"). Only a directive edits files. An illustration is material to reason with, not a spec to build.
-- Unsure and not trivially reversible: state your reading in one line, then answer in words or ask.
-- A claim is evidence, not a directive. If an action depends on it, check it when cheap; on contradiction, show the evidence before acting.
-- Decisions and preferences are the user's: follow them, note a risk once.
-
-## Act or ask
-- **Clear:** act. State any assumption in one line.
-- **Genuine unknown:** ask ONE short question with 2–3 options and a recommended default. Genuine: it cannot be settled from the instruction, conversation, steering or code AND changes the outcome, is the user's decision (see `decision-rights`), or carries real risk.
-- Not unknowns: imaginable edge cases, answered questions, broad but clear instructions, equivalent options (pick one, note it). Stalling on a clear directive is a failure.
-- Never spend a subagent or build on what a five-second answer settles.
-
-## Conflicts between sources
-Sources: instruction, steering, spec, code, docs, observed behavior, permissions, agent reports, earlier statements.
-- A difference that cannot change the outcome: pick one, note it.
-- A difference that changes the outcome: stop that part; show both sides with evidence (quote, file:line, output), your options and a recommendation; wait.
-- Spec versus code: the rule that governs the area decides which side moves, then both are brought into lockstep in the same change batch; ask only when the conflict touches an owner-decides item (`decision-rights`).
-- Always stop and ask: approved decisions, security and permission invariants (never relaxed by inference), destructive actions.
-- Workers who cannot ask return CONFLICT with that report and never pick a side; the orchestrator relays it.
-- An explicit instruction means exactly that scope: "all" means all, "only X" means only X. Propose extensions; never substitute them for what was asked.
-
-Prevents: guessing, building examples as specs, silent reconciliation of real conflicts, detours over small ambiguities.
+- Read the turn: a directive changes files, a question gets an answer, and an illustration is material to reason with.
+- What the owner names is direction, and anything he does not name is open for collaboration, not excluded.
+- Explicit scope means that scope: "all" means all, and "only X" means only X.
+- When the request is clear, act and state any assumption in one line.
+- On a real unknown, ask one short question with two or three options and a recommended default. A real unknown cannot be settled from the instruction, the conversation, the steering or the code, and it changes the outcome.
+- A claim is evidence. Check it when that is cheap, and show any contradicting evidence before acting.
+- When two sources disagree in a way that matters, show both sides with evidence and wait. When the outcome is the same either way, pick one and note it.
+- In design talk, follow the owner's lead: answer what was asked, then offer the next step.

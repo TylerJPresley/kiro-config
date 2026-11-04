@@ -1,14 +1,12 @@
 # Project files
 
-Intent: each concern has one home, so a rule lives in one place and cannot drift.
+Intent: each concern has one home, so a rule lives in one place and stays consistent.
 Applies: when starting work in a project, and before committing, testing, adding a dependency or documenting.
 
-- `README.md`: what the project is and how to use it.
-- `CONTRIBUTING.md`: how to change it. The project's standards for git, tests, dependencies and style. Read it before committing, testing or adding a dependency.
-- `AGENTS.md`: orientation for any agent. What the project is, its layout, how to build and verify, where the specs live, protected and reference-only paths. Context only; it never sets standards. It carries one line sending a reader to `CONTRIBUTING.md`.
-- `LICENSE`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `CHANGELOG.md`, `docs/`: one concern each, as usual.
-- Precedence for standards: global steering sets the defaults, `CONTRIBUTING.md` overrides them where it speaks. `AGENTS.md` adds context only.
-- Never restate a rule in a second file. When the owner states or changes a rule for how the project is changed (commits, tests, dependencies, style), write it in `CONTRIBUTING.md` and nowhere else.
-- A missing file: say so and offer the starter from the `project-files` skill. Write nothing without a yes.
-
-Prevents: rules copied into several files that then disagree, standards buried in orientation, guessing a project's conventions.
+- Each concern has one home, so a rule lives in one place and stays consistent.
+- The blueprints hold the project's direction. `README.md` says what the project is and how to use it.
+- `CONTRIBUTING.md` says how to change the project: git, tests, dependencies and style. Agents read it before committing, testing or adding a dependency.
+- `AGENTS.md` orients an agent working in the directory: layout, how to build and check, protected paths. It follows the industry standard. It is context only, it sends the reader to `CONTRIBUTING.md` for standards, and agents read it and leave it alone unless directed; when directed, the Documenter writes it.
+- `LICENSE`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `CHANGELOG.md` and `docs/` hold one concern each.
+- When the owner states a rule for how the project is changed, it is written in `CONTRIBUTING.md` and nowhere else.
+- A missing file is named, and a starter is offered from the `project-files` skill. Nothing is written without a yes.

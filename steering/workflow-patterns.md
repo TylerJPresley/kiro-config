@@ -3,13 +3,8 @@
 Intent: efficient, non-stalling tool use.
 Applies: while working with files, commands and long contexts.
 
-## Tool order
-- Read a file before writing it; never assume its contents. For large files read only the relevant section and paginate.
-- Use targeted edits for existing files, full writes for new ones.
-- Run tests or the build after writes to validate before moving on.
-
-## Stalls
-- Reading the same file twice without writing means you are stalling: decide and act.
-- A failed tool call: diagnose the error before retrying. Same arguments, same failure.
-
-Prevents: blind edits, retry loops, wasted context.
+- Read a file before changing it. For a large file, read the relevant section.
+- Use targeted edits on existing files and full writes for new ones.
+- After writing, run the build or the check that covers the change.
+- Decide and act once you have read enough. Reading the same file again without a change is a stall.
+- When a call fails, read the error and change something before retrying. The same call gives the same failure.

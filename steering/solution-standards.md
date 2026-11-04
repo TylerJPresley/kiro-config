@@ -1,16 +1,13 @@
 # Solution standards
 
-Intent: the simplest correct solution that fits the real target.
+Intent: the smallest correct solution that realizes the blueprint for the real target.
 Applies: when designing or writing any code or configuration.
 
-- **Minimal:** the smallest correct solution. No boilerplate, no over-abstraction, no defensive code that is not needed yet.
-- **Root cause:** fix the cause, not the symptom. If a fix only suppresses a symptom, say so and propose the real fix. A workaround is acceptable only when requested and labeled temporary.
-- **Chesterton's Fence:** before removing or changing something whose purpose is unclear, understand why it exists; if the reason still holds, keep it. Delete only once the reason is gone.
-- **Fit for the target:** verify the approach works for the actual deployment targets (providers, platforms, environments). A feature that works on only one is not a correct implementation. Test assumptions against the real constraints.
-- **Use libraries:** if a well-maintained package solves it, use it; check for one before writing ~10+ lines of utility code.
-- **Do not cargo-cult:** a library feature must solve the actual problem in the actual runtime; if a simpler approach works everywhere, prefer it.
-- **SOLID:** single responsibility per module; open for extension, closed for modification; depend on abstractions, not implementations.
-- **DRY:** one source of truth. If logic exists, extend or replace it; do not create a parallel version.
-- **KISS:** a 5-line inline change beats a 50-line module.
-
-Prevents: over-engineering, band-aids, single-target solutions, reinvented wheels.
+- Build the smallest correct solution that does what the blueprint calls for, and handle the cases it names.
+- Fix the cause. A temporary workaround is labeled and has a planned end.
+- Before changing something whose purpose is unclear, learn why it exists, and keep it while the reason holds.
+- Make it work on the actual platforms, providers and runtimes.
+- Extend the logic that exists, so each fact lives in one place.
+- Check for a well-maintained package before writing ten or more lines of utility code, and confirm it solves the actual problem in the actual runtime.
+- Stay in the requested scope, and offer other ideas as suggestions.
+- Realize the blueprint. A better design goes to the Architect and into the blueprint first.

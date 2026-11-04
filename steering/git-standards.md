@@ -1,12 +1,12 @@
-# Git standards (defaults)
+# Git standards
 
-Intent: small, tested, readable history in every project.
-Applies: whenever committing, branching or pushing. The project's `CONTRIBUTING.md` overrides these where it speaks.
+Intent: a small, tested, readable history, where each commit stands on its own.
+Applies: whenever an agent commits, branches or pushes.
 
-- Use the branching model `CONTRIBUTING.md` states; without one, commit to the default branch.
-- Conventional commits (`feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`); add the spec section when one applies.
-- One logical change per commit, small enough that a reader sees what happened from the message and the diff. Never mix a refactor, a removal, a new limit and a bug fix.
-- Every commit is tested: build and the affected tests pass before it is made; a bug fix carries its regression test in the same commit. Commit after each verified chunk, not once at the end.
-- Push in logical chunks after the full test run passes, and only when the user asks. No force pushes, no amending pushed commits.
-
-Prevents: bundled commits, untested commits, surprise pushes.
+- Commit at each logical seam: the point where a person reading the history would want a boundary. Each commit is one coherent change that can be understood on its own.
+- Each commit builds and passes the checks that cover it. A bug fix carries its regression test in the same commit.
+- Each agent commits its own work at each seam the plan defines, so the Architect commits blueprint changes and the Documenter commits repo documents, after each verified chunk, so the history follows the work as it happens. Pushing happens only when the owner asks.
+- A blueprint change and the code that realizes it are separate commits, in order, so the spec and its implementation can each be read alone.
+- Messages use conventional types (`feat`, `fix`, `refactor`, `test`, `docs`, `chore`), say what changed and why, and name the blueprint section when one applies.
+- Branching follows `CONTRIBUTING.md`; without one, work goes on the default branch.
+- Push in logical chunks after the full run passes, at the owner's request. A pushed commit is corrected with a new commit.

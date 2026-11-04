@@ -1,19 +1,15 @@
 # Quality and testing
 
-Intent: tests prove behavior; failures are investigated, not patched around.
-Applies: when writing tests, fixing bugs, or debugging.
+Intent: tests prove behavior; a failure is investigated to its root cause.
+Applies: when writing tests, fixing a bug, or debugging.
 
-## Test first
-- Write a failing test before implementing functional logic. Every bug fix gets a regression test.
-- Broad base of unit tests, fewer integration tests, minimal end-to-end.
-
-## Debug systematically
-Build a tight feedback loop first: one command that reproduces the failure fast, before forming any hypothesis.
-No fix without root-cause investigation: reproduce and observe; identify the failing assumption; hypothesize; implement and verify. Same arguments give the same failure, so diagnose before retrying.
-
-## Structure and mocks
-- Use Given/When/Then to mirror acceptance criteria.
-- Mock only at external boundaries. Use deterministic fixtures and in-memory fakes over complex mock setups.
-- A test must drive the real path it claims to cover.
-
-Prevents: untested fixes, guess-and-patch debugging, tests that pass without proving anything.
+- Tests come first: a failing test, derived from the plan's criteria, exists before the code.
+- A test must mean something. It proves a behavior, and it can fail. Seeing it fail first is the proof; a test that passes before the change proves nothing.
+- No test exists just to pass: every assertion can fail, no test checks a mock, and a failing test is never weakened or skipped to get green.
+- An existing test is a contract. When it fails, the code is wrong unless the plan says the behavior it asserts has changed. Changing, deleting or skipping an existing test to get green is a failure.
+- A plan names every existing test it changes and why, tied to the blueprint change. The `test-diff` script lists the changed tests, and the Reviewer reads its output.
+- A bug fix carries a regression test, written first.
+- A test drives the real path it claims to cover. It mocks only at external boundaries and prefers fixtures and in-memory fakes.
+- Many unit tests, fewer integration tests, minimal end-to-end tests.
+- A failing test is investigated. The root cause is found before any fix; the `diagnosing-bugs` skill holds the method.
+- Small work updates the existing test when the behavior it asserts changed, using the existing scaffolding.
