@@ -73,7 +73,7 @@ Global steering and skills are always loaded. When you start Kiro inside a proje
 | `scripts/`  | Deterministic Node helpers (lessons tracker, steering linter) run with `node`. |
 | `settings/` | Local CLI and UI state; secret/stateful files here are gitignored. |
 
-**Gitignored (not committed):** `sessions/`, `session-index/`, `logs/`, `backups/`, and secret or local-state files — `settings/mcp.json` (and any `**/mcp.json`), `settings/feed_state.json`, `settings/survey_state.json`, plus `.env`, `*.env`, `*token*`, `*credential*`, `*.key`, `*.pem`, `.DS_Store`, and `*.bak`. These are local, non-portable, or sensitive, so they stay out of the public repo.
+**Gitignored (not committed):** Session and build state — `sessions/`, `session-index/`, `logs/`, `_internal/`. Local app state — `settings/feed_state.json`, `settings/survey_state.json`, `settings/*.lock`. Secrets and credentials — `settings/mcp.json`, `**/mcp.json`, `.env`, `*.env`, `*token*`, `*credential*`, `*.key`, `*.pem`, `*.p12`, `*.pfx`, `*.jks`, `id_rsa*`, `id_ed25519*`, `id_ecdsa*`, `id_dsa*`, `.netrc`, `credentials.json`, `.aws/`, `.ssh/`, `.gnupg/`. OS and temporary files — `.DS_Store`, `**/.DS_Store`, `backups/`, `*.bak`. These are local, non-portable, or sensitive.
 
 ## Steering
 
@@ -112,7 +112,7 @@ The agent model is a **Director** that holds the goal and routes work, plus **sp
 
 | Agent | Role | Writes |
 |-------|------|--------|
-| `director` | Team lead: holds the goal, routes work to the right specialist by capability, verifies by script evidence. Does not implement. | `_internal/**` (handoff, decisions, lessons) |
+| `director` | Team lead: holds the goal, routes work to the right specialist by capability, verifies by script evidence. Does not implement. | `_internal/handoff.md`, `_internal/decisions.md`, `_internal/lessons.md` |
 | `architect` | Owns blueprints (vision, architecture, components, specification via strata-bp) and runs discovery with the owner to fill blanks. Writes blueprint markdown only. | `blueprint.md`, `*-blueprint.md` |
 | `planner` | Designs: turns outcomes into plans with pinned decisions, criteria, and seams. Re-plans after a step fails twice. | `_internal/plans/**`, `_internal/proposals/**` |
 | `implementer` | Builds to spec, tests first, runs the project gate, commits at each seam and tags to close features. | Source, tests, commits and feature/release tags; denied: `blueprint.md`, `AGENTS.md`, `.kiro/**`, `_internal/**` and secrets |
@@ -121,7 +121,7 @@ The agent model is a **Director** that holds the goal and routes work, plus **sp
 | `researcher` | Investigates assigned questions with sources; network-enabled; reports gaps when sources are missing. | `_internal/research/**` (in research-cache format) |
 | `documenter` | Maintains README, CONTRIBUTING, LICENSE, CHANGELOG, `docs/`, and AGENTS.md (only when directed). Keeps them true to what was built. | Markdown docs only (not blueprints); AGENTS.md only on direction |
 
-**Permission boundary.** Each agent's JSON pins `allowedPaths` and `deniedPaths` for writes and allow/deny lists for shell. Every agent denies writing and reading secrets — `.env`, `*.pem`, `*.key`, `*.p12/pfx/jks`, `id_rsa*`/`id_ed25519*`, `credentials.json`, `.aws/`, `.ssh/`, `.gnupg/` — and denies destructive shell (`sudo`, `rm -r`, `git push --force`, `git reset --hard`, `git clean -f`).
+**Permission boundary.** Each agent's JSON pins `allowedPaths` and `deniedPaths` for writes and allow/deny lists for shell. Every agent denies writing and reading secrets — `.env`, `*.pem`, `*.key`, `*.p12/pfx/jks`, `id_rsa*`/`id_ed25519*`, `credentials.json`, `.aws/`, `.ssh/`, `.gnupg/` — and denies destructive shell (`sudo`, `rm -r`, `git push`, `git reset --hard`, `git clean -f`).
 
 ## Skills
 
