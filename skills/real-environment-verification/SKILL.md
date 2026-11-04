@@ -1,16 +1,21 @@
 ---
 name: real-environment-verification
-description: How to verify a built product in a real environment (scratch environment, loopback fakes, pty driver, capped real-model turns) without touching the user's own configuration. Use for milestone verification of what changed.
+description: "verify what changed in a real environment (scratch setup, loopback fakes, pty driver, capped real-model turns) without touching the owner's own configuration. Use when a user-visible feature closes and at each release."
 ---
 
 # Real-environment verification
 
-Intent: prove the shipped artifact works the way a user would run it, because tests that call internal APIs can pass while the product is broken.
+Intent: the shipped artifact is proven to work the way a user runs it, because a test that calls internal APIs can pass while the product is broken.
 
-1. **Scratch environment** — create it in the project's scratch folder (thinking-folder), with its own HOME and config directory. Never touch the user's real configuration. Copy only what is needed (for example the model entry, no secrets).
-2. **Use the project's helpers first** (project-contract / its tools README): fake model server, capture server, hostile fixtures, pty driver. Add reusable ones there; do not rebuild them.
-3. **Real services cost time and money** — use a handful of real-model turns at most; send everything else through a loopback fake.
-4. **Interactive programs** — drive them through a pseudo-terminal (python3 `pty`; never name your script `pty.py`), strip ANSI for assertions, cap the runtime.
-5. **Receivers and servers** — listen on 127.0.0.1 with port 0; write captures into the scratch folder via a variable that you check is set.
-6. **Scenario table** — PASS / FAIL / BLOCKED with ≤ 10 lines of evidence each; for each FAIL: exact steps, expected vs actual, likely code location.
-7. **Clean up** — wrap every command in `timeout`, kill everything you start, run the project's scratch-clean helper, and finish with `git status --short`.
+## When to use
+- A feature that changes what a user sees closes.
+- A release is being prepared.
+
+## How to work
+1. Create a scratch environment in the project's scratch folder (see the `thinking-folder.md` steering), with its own HOME and config directory. Leave the owner's real configuration untouched. Copy only what is needed, such as the model entry, and no secrets.
+2. Use the project's helpers first (its tools README): fake model server, capture server, hostile fixtures, pty driver. Add reusable ones there rather than rebuilding them.
+3. Keep real services to a handful of real-model turns, and send everything else through a loopback fake, since real services cost time and money.
+4. Drive an interactive program through a pseudo-terminal (python3 `pty`; name the script something other than `pty.py`), strip ANSI for assertions, and cap the runtime.
+5. Listen on 127.0.0.1 with port 0 for receivers and servers; write captures into the scratch folder through a variable you confirm is set.
+6. Record a scenario table (PASS, FAIL, BLOCKED) with up to ten lines of evidence each; for each FAIL give the exact steps, expected against actual, and the likely code location.
+7. Clean up: wrap every command in `timeout`, end everything you start, run the project's scratch-clean helper, and finish with `git status --short`.

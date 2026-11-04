@@ -1,0 +1,6 @@
+# slugify acceptance criteria. Run from the repository root: node ~/.kiro/scripts/verify-plan.mjs plan-example.criteria
+# Each line is `name :: command`; the criterion passes when its command exits 0.
+slugify-basic :: node -e 'import("./src/slugify.mjs").then(m => process.exit(m.slugify("Hello, World!") === "hello-world" ? 0 : 1))'
+slugify-collapses-runs :: node -e 'import("./src/slugify.mjs").then(m => process.exit(m.slugify("a---b") === "a-b" ? 0 : 1))'
+slugify-trims-edges :: node -e 'import("./src/slugify.mjs").then(m => process.exit(m.slugify("!hi!") === "hi" ? 0 : 1))'
+slugify-tests :: node --test test/slugify.test.mjs

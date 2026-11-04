@@ -1,36 +1,30 @@
 ---
 name: agent-roles
-description: "every agent knows what it may change, and the agent that produced work never verifies it. Use whenever work is delegated, an agent's output is judged, or an agent is added."
+description: "every agent knows what it may change, and a different agent verifies its work. Use whenever work is delegated, an agent's output is judged, or an agent is added."
 ---
 
 # Agent roles and write scopes
 
-One global agent set (`~/.kiro/agents/`) serves every project and is project-neutral; the project supplies its facts through `AGENTS.md` (see project-contract).
+Intent: one global agent set serves every project, each agent is defined by the paths it may change, and a different agent always verifies the work. The authoritative write scope for each role lives in its agent file under `_internal/rework/agents/`; the lines below summarise it and point to that file.
 
-## Working directory
-- The CWD Kiro started in is the project root. Use relative paths; do not write outside it unless the user names the file (back it up first).
-- Write scopes are CWD-relative globs. Every writer denies `..` segments and secrets (`.env`, `*.pem`, `*.key`), and (except the orchestrator and researcher) the thinking folder.
+## When to use
+- The Director delegates work or judges an agent's output.
+- An agent is added or its scope changes.
 
-## Roles
-| Agent | Writes | Notes |
-|---|---|---|
-| orchestrator | thinking folder (`_internal/**`) | Only agent that spawns subagents. Air traffic controller: routes by the plan, runs verify scripts. Does not implement, design, debug or read source. |
-| planner | `_internal/plans/**`, `_internal/proposals/**` | The only designer. Pins decisions, edge cases, tiers and acceptance criteria as commands; re-plans after a step fails twice. Never implements. |
-| researcher | `_internal/research/**` | Network read-only. Cites source + date. Never guesses. |
-| blueprint | `blueprint.md`, `*-blueprint.md` | Change control: propose, confirm, write. |
-| implementer | workspace, minus protected paths | Protected: specs, `AGENTS.md`, thinking folder, `.git/`, `.kiro/`, `.github/`, `node_modules/`, reference-only dirs. |
-| reviewer | `_internal/plans/*.review.md` | Fresh context. Verdict file: first line PASS or FAIL, then findings ranked by severity, against the spec. |
-| security-reviewer | nothing | Fresh context. Tool output over memory for vulnerabilities and licenses. |
-| documenter | `README.md`, `FEATURES.md`, `PLUGINS.md`, `CHANGELOG.md`, `docs/**` | Never specs or source. |
-
-## Rules
-- The agent that produced work never verifies it.
-- Specs are written only by the blueprint agent; code only by the implementer; docs only by the documenter.
-- Agents are chosen by their description (the `subagent` tool shows it), not by name; this table documents scopes only.
+## How to work
+1. Match the work to a role by its one-line summary; the agent file holds the exact scope.
+   - Director (director.json) — writes the handoff, the decisions file and the lessons; routes work and confirms done from script evidence; the only agent that spawns subagents.
+   - Planner (planner.json) — writes plans and proposals under `_internal/plans/` and `_internal/proposals/`; the only designer; pins decisions, edge cases and criteria, and re-plans after a step fails twice.
+   - Researcher (researcher.json) — writes the research cache under `_internal/research/`; reads sources on the network and cites source and date.
+   - Architect (architect.json) — writes the blueprint files blueprint.md and *-blueprint.md as drafts the owner approves; sets direction and runs discovery.
+   - Implementer (implementer.json) — writes source and tests across the workspace, minus the protected paths listed in its file; tests first; tags a feature when the plan or the owner asks.
+   - Reviewer (reviewer.json) — writes a verdict file `_internal/plans/*.review.md`, first line PASS or FAIL, then findings by severity, judged against the spec in fresh context.
+   - Security reviewer (security-reviewer.json) — writes a risk report `_internal/plans/*.security.md` from the audit script's facts; judges only flagged items.
+   - Documenter (documenter.json) — writes the common repo documents (`README.md`, `CONTRIBUTING.md`, `CHANGELOG.md`, `docs/` and the rest) and `AGENTS.md` when the owner directs it.
+2. Keep the separation: the Architect writes specs, the Implementer writes code, the Documenter writes repo documents, and the agent that produced work never verifies it.
+3. Choose an agent by its description, which the `subagent` tool shows, not by name; this list documents scopes.
 
 ## Adding an agent
-1. Create `~/.kiro/agents/<name>.json` with a precise description ("Use for …. Writes only …") and the narrowest write scope.
-2. Add it to the orchestrator's `availableAgents` (and `trustedAgents` if it is read-only).
-3. Add one row above. Nothing else changes: the orchestrator prompt is capability-based.
-
-Prevents: self-graded work, scope creep, a prompt that must be edited for every new agent.
+1. Create its agent file with a precise description ("Use for …. Writes only …") and the narrowest write scope.
+2. Add it to the Director's `availableAgents`, and to `trustedAgents` when it is read-only.
+3. Add one line above. The Director prompt stays capability-based, so nothing else changes.

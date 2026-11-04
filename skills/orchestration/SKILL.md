@@ -1,31 +1,23 @@
 ---
 name: orchestration
-description: "the orchestrator drives work to a verified result with the least cost and time. Use whenever more than one agent, or more than a trivial step, is involved."
+description: "the Director drives work to a verified result with the least cost and time. Use whenever more than one agent, or more than a trivial step, is involved."
 ---
 
 # Orchestration
 
-## Delegating
-- Choose the agent whose description fits the work; do not implement large tasks yourself.
-- Run independent work in PARALLEL; chain stages only when one needs another's output.
-- Facts you do not know go to the researcher with a demand for sources; never guess.
-- At the Plan step list the owner's principles that apply and name the principle each part of the design follows (`decision-rights`). A design that contradicts a stated principle is a defect found before delegation, not after.
+Intent: the Director routes each piece of work to the specialist whose description fits it, and confirms done from script evidence, so work reaches a verified result with the least cost and time.
 
-## Briefs (every one)
-- "Wrap EVERY shell command in `timeout`; leave no background processes; no other agents work in parallel; stop and report at ~15 minutes per step." Say plainly that earlier uncommitted work is the orchestrator's own.
-- A reply budget ("reply in ≤ N lines"), the pinned decisions (from the plan, never invented by the orchestrator), the exact gate command, and "report what is NOT done; never report success for work that is not in the tree".
-- Bugs: failing test first, then the fix. Features: a test that drives the real path.
-- Point verifiers at the project's reusable helpers before they write scripts.
+## When to use
+- More than one agent is involved, or the task is more than a trivial step.
+- Work needs routing, sequencing and verification across specialists.
 
-## Verifying
-- Start a step only after `node ~/.kiro/scripts/verify-plan.mjs --check <criteria-file>` passes; briefs name the plan file and step, not a paragraph.
-- Pick the tier (verification-tiers). Reviewers check the SPEC and the code, never the implementer's report.
-- A failed step goes back to the implementer with the failing criterion's output verbatim; failing twice, to the planner to re-plan. The orchestrator does not diagnose, read source or run tests itself.
-- Do not re-run whole suites to feel safe; re-verify only what changed.
-- If a stage stalls, kill leftovers, narrow the brief and split it.
-
-## Reporting
-Outcome, evidence, what is not verified, decisions needed. Short.
-- Decisions the agent made are one-line entries in the project's decisions log; only owner-decides items appear as questions.
-
-Prevents: serial work that could be parallel, unbounded agent runs, trust in unverified reports, re-run ceremonies.
+## How to work
+1. Plan the route. List the owner's principles that apply and name the principle each part of the design follows (`decision-rights`). A design that contradicts a stated principle is caught here, before delegation.
+2. Choose the agent whose description fits the work. Send facts you do not know to the Researcher with a demand for sources.
+3. Run independent work in parallel. Chain stages only when one needs another's output.
+4. Write each brief from the `briefing` skill: pinned decisions from the plan, a reply budget, tests first, the gate command, and "report what is NOT done; never report success for work that is not in the tree."
+5. Start a step only after its criteria pass: `node ~/.kiro/scripts/verify-plan.mjs --check <criteria-file>`. Point verifiers at the project's reusable helpers before they write scripts.
+6. Size verification to risk. The Reviewer checks the spec and the code in fresh context, never the Implementer's report. The real-environment check (`real-environment-verification` skill) runs when a user-facing feature closes and at every release.
+7. Re-verify only what changed. On a failed step, return the failing criterion's output verbatim to the Implementer; on a second failure, return it to the Planner to re-plan. The Director routes, and leaves diagnosis, source reading and test runs to the specialists.
+8. Report the outcome, the evidence, what is not verified and any decision the owner must make, short. Log the Director's own decisions as one line each in the decisions file; only owner-decides items reach the owner.
+9. When a stage stalls, end any leftover processes, narrow the brief and split it.

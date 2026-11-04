@@ -1,33 +1,21 @@
 ---
 name: context-engineering
-description: "manage the agent's context across a session for output quality (signal-to-noise), not just token count. Use during long or multi-stage sessions, before a large run, or when context fills past ~40-75%."
+description: "manage the session's context for quality as well as size, and know when a fresh session pays off. Use during long or multi-stage sessions, before a large run, or when the context is filling up."
 ---
 
 # Context engineering
 
-Intent: keep the context high-signal so output quality holds; token count is a proxy, not the goal.
+Intent: keep the context high-signal so output quality holds, and hand off to a fresh session before a forced reset loses the active task.
 
-## Priority (highest first)
-1. Rules / steering
-2. Specs
-3. Relevant code
-4. The current error
-5. Conversation history
+## When to use
+- A session runs long or spans several stages.
+- Before a large run that will read or generate a lot.
+- When `ctx.mjs` reports the context filling toward its limit.
 
-When space is tight, the lowest-priority material goes first.
-
-## Timing
-- Trim at about 75% full, not at 100%. Do not wait for forced compaction to decide what matters.
-
-## Placement (lost-in-the-middle)
-- Models recall the start and the end best; the middle is weakest.
-- Put stable rules and specs at the **start**; put the **active** task material last, closest to the generation point.
-
-## What to cut, what to protect
-- Cut first: failed attempts, stale file dumps, resolved errors.
-- Protect: the current error, the active constraint, the pinned decision.
-- Compress (summarize to the decision and evidence) before dropping outright.
-
-See `ctx.mjs` for the budget measurement and the session-tracking steering for cross-session state; this skill is the judgment layer over both, not a copy of them.
-
-Prevents: forced compaction losing the active task, high-signal rules buried mid-context, token-count tuning that ignores quality.
+## How to work
+1. Order material by priority, highest first: rules and steering, specs, relevant code, the current error, then conversation history. When space is tight, the lowest priority goes first.
+2. Place stable rules and specs at the start and the active task material last, closest to the generation point, because a model recalls the start and the end best.
+3. Trim early, at about 75 percent full, rather than waiting for a forced compaction to decide what matters.
+4. Cut failed attempts, stale file dumps and resolved errors first. Keep the current error, the active constraint and the pinned decision. Compress to the decision and its evidence before dropping anything outright.
+5. Read `ctx.mjs` once per work item and act on its label: below 25 percent proceed; at 25 percent or more finish the item in hand, keep replies minimal, and tell the owner a reset pays off now; at 30 percent or more start no new work item and write the handoff so a fresh session resumes.
+6. Keep cross-session state in the handoff so a reset costs nothing; the `session-tracking.md` steering holds the handoff rules.

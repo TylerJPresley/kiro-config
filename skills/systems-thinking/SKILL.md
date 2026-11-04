@@ -1,31 +1,26 @@
 ---
 name: systems-thinking
-description: "Plan with a system map before changing anything non-trivial: purpose, boundary, connections, loops and delays, second-order effects, leverage point, predicted touches. Use at the Plan step of Tier 2+ work (new subsystem, security/permissions/data, multi-file or multi-agent change) and when a fix keeps failing."
+description: "map a change's purpose, boundary, connections, loops, second-order effects and predicted touches before making it. Use at the Plan step of a new subsystem, a security, permissions or data change, a multi-file or multi-agent change, and when a fix keeps failing."
 ---
 
-# Systems thinking (the Plan step for Tier 2+)
+# Systems thinking (the Plan step)
 
-Intent: see what a change connects to before making it, and learn from what the map missed.
+Intent: see what a change connects to before making it, then learn from what the map missed.
 
-## The map (about 10 lines; every line cites evidence: file:line, command output, or says "unknown")
-- **Purpose:** what changes, and the measure that shows it worked.
-- **Boundary:** in scope, out of scope, who owns the edge.
-- **Connections:** callers, consumers, tests, docs, config, permissions, and every other place that holds the same fact. Enumerate with tools (references, import graph, grep), not memory.
-- **Loops:** what reinforces or balances it (gate, reviews, retries, lessons).
-- **Delays:** what will not show until later (builds, caches, resumed sessions, long runs).
-- **Second-order effects:** what else moves; who relies on today's behavior.
-- **Leverage point:** the smallest change at the right place. A rule, goal or information flow beats effort inside the existing structure.
-- **Predicted touches:** the files and areas you expect to change.
+## When to use
+- At the Plan step of a new subsystem, or a change that touches security, permissions, data, several files or several agents.
+- When a fix keeps failing and the cause is still unknown.
 
-## Questions that catch the usual misses
-- Who calls this? (built but never wired)
-- What else holds this fact? (duplicated rules go stale)
-- What runs at the same time? (races, ordering)
-- What does this fix move elsewhere? (fixes that fail, shifting the burden, drifting goals)
-- Does what we measure reward the right thing?
-
-## After the work: predict, then verify
-Compare predicted touches with the real change (`git diff --name-only`). Each surprise is a missed connection: state what the map missed. If it recurs, record it in `lessons.md`.
-
-## Size
-Tier 1: skip, or one line. Tier 2+: the full map, kept short, in the brief. Reviewers receive the map and check it against the diff.
+## How to work
+1. Write the map (about ten lines; every line cites evidence as file:line, command output, or says "unknown"):
+   - **Purpose:** what changes, and the measure that shows it worked.
+   - **Boundary:** in scope, out of scope, who owns the edge.
+   - **Connections:** callers, consumers, tests, docs, config, permissions, and every other place that holds the same fact. Enumerate with tools (references, import graph, grep).
+   - **Loops:** what reinforces or balances it (the gate, reviews, retries, lessons).
+   - **Delays:** what shows up only later (builds, caches, resumed sessions, long runs).
+   - **Second-order effects:** what else moves, and who relies on today's behavior.
+   - **Leverage point:** the smallest change at the right place. A rule, a goal or an information flow does more than effort inside the existing structure.
+   - **Predicted touches:** the files and areas you expect to change.
+2. Ask the questions that catch the usual misses: Who calls this? What else holds this fact? What runs at the same time? What does this fix move elsewhere? Does what we measure reward the right thing?
+3. After the work, compare the predicted touches with the real change (`git diff --name-only`). Name each surprise as a missed connection; when one recurs, record it in lessons.md.
+4. Size the map to the change: one line for a small local change, the full map kept short in the brief for anything larger. Reviewers receive the map and check it against the diff.

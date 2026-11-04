@@ -5,8 +5,13 @@ description: "command-line and system software behaves predictably in pipelines,
 
 # Systems engineering
 
-- CLI: `stdout` for results, `stderr` for errors and status; handle SIGINT/SIGTERM gracefully; compatible with pipes, redirection and env-based config; top-level `--help` in a grouped layout with workflow examples; placeholders in angle brackets (`<name>`, `<path>`), never hardcoded values; commands ordered by workflow, not alphabetically.
-- Distribution: follow SemVer strictly; native OS packages with proper dependency metadata.
-- Resources: manage file descriptors, signals and memory deliberately; avoid heap fragmentation in long-running processes; pool connections for repeated I/O.
+Intent: command-line and system software behaves the same in a pipeline, a shell and an operating environment as it does run by hand.
 
-Prevents: tools that break in scripts, leaked resources, ungraceful shutdowns.
+## When to use
+- Building a CLI, a daemon, a package, or anything that handles signals and resources.
+
+## How to work
+1. Design the CLI for composition: send results to `stdout` and errors and status to `stderr`, handle SIGINT and SIGTERM gracefully, and work with pipes, redirection and environment-based config.
+2. Make help discoverable: a top-level `--help` in a grouped layout with workflow examples, placeholders in angle brackets (`<name>`, `<path>`) rather than hardcoded values, and commands ordered by workflow rather than alphabetically.
+3. Distribute predictably: follow SemVer strictly and ship native OS packages with correct dependency metadata.
+4. Manage resources deliberately: control file descriptors, signals and memory, keep a long-running process free of heap fragmentation, and pool connections for repeated I/O.

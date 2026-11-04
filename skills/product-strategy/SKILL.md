@@ -5,9 +5,14 @@ description: "ship small, learn from real use, keep the code and the message con
 
 # Product strategy
 
-- Done is better than perfect: ship an MVP and iterate on real data. Leave code cleaner than you found it, in small verifiable increments that preserve behavior.
-- Wrap third-party APIs in local adapters; use circuit breakers and retries on every third-party connection.
-- Documentation as code: READMEs, decision rationale, API docs, setup and usage guides for every module. Follow Conventional Commits.
-- Communicate in simple, direct language written for the specific reader (developer, operator or user). Keep one visual and verbal identity.
+Intent: ship a small increment, learn from real use, and keep the code and the message saying the same thing.
 
-Prevents: big-bang releases, vendor lock-in through scattered calls, docs nobody can use.
+## When to use
+- Scoping work, refactoring, wrapping a third-party integration.
+- Writing communication a user, operator or developer reads.
+
+## How to work
+1. Ship an MVP and iterate on real data; leave the code cleaner than you found it in small, verifiable increments that preserve behavior.
+2. Wrap a third-party API in a local adapter, and put a circuit breaker and retries on every third-party connection.
+3. Keep documentation as code: a README, decision rationale, API docs, and setup and usage guides for every module. Follow Conventional Commits.
+4. Write for the specific reader (developer, operator or user) in simple, direct language, and keep one visual and verbal identity.

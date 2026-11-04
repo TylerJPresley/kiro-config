@@ -1,47 +1,24 @@
 ---
 name: project-files
-description: "starter versions of README.md, CONTRIBUTING.md and AGENTS.md for a project that lacks them. Use when one of these files is missing and the owner agrees to create it."
+description: "starter README.md, CONTRIBUTING.md and AGENTS.md for a project that lacks one. Use when one of these files is missing and the owner agrees to create it."
 ---
 
 # Project file starters
 
-Offer a starter only when the file is missing and the owner says yes. Fill every bracket from the project (read `package.json`, the build scripts, the existing docs); ask once about anything you cannot find. Keep each file short.
+Intent: a project that lacks a core file gets a short, true starter, so each concern has one home from the first commit.
 
-## README.md
-```
-# <name>
-<one line: what it is and who it is for>
-## Requirements
-## Install and run
-## License
-```
+## When to use
+- A project is missing `README.md`, `CONTRIBUTING.md` or `AGENTS.md`, and the owner agrees to create it.
+- You are setting up a new project or filling a gap an agent found.
 
-## CONTRIBUTING.md
-```
-# Contributing to <name>
-## Getting started
-<clone, install, build, test: the exact commands>
-## Standards
-- Commits: conventional (`feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`). One logical change per commit, small enough to read at a glance. Every commit builds and passes the affected tests; a bug fix carries its regression test. Push in logical chunks after the full test run passes. No force pushes, no amending pushed commits.
-- Testing: <what must be tested, coverage target if any>
-- Dependencies: <license policy, how to add one>
-- Style: <language, formatter, lint>
-## Licensing
-<inbound and outbound terms>
-```
+## How to work
+1. Name the missing file and offer the starter. Write it only after the owner says yes.
+2. Fill every bracket from the project: read `package.json`, the build scripts and the existing docs for the real values. Ask once about a value you cannot find.
+3. Keep each file short and put each concern in its one home: what it is in `README.md`, how to change it in `CONTRIBUTING.md`, orientation in `AGENTS.md`. State a rule for changing the project in `CONTRIBUTING.md` and nowhere else.
+4. The `AGENTS.md` starter carries a `Licenses allowed:` line that the `audit` script reads for the license allow-list; set it to the project's accepted SPDX ids.
+5. Copy a starter from `references/`: `references/README.template.md`, `references/CONTRIBUTING.template.md`, `references/AGENTS.template.md`.
 
-## AGENTS.md
-```
-# <name>
-<one line: what it is>
-## Layout
-<top-level folders and what each holds>
-## Build and verify
-<the commands, including the full gate>
-## Specification
-<where the specs live and who changes them>
-## Protected paths
-<files and folders an agent must not change>
-
-Follow `CONTRIBUTING.md` for this project's standards.
-```
+## References
+- `references/README.template.md`
+- `references/CONTRIBUTING.template.md`
+- `references/AGENTS.template.md`
