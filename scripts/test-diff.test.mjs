@@ -1,9 +1,21 @@
-import { test } from "node:test";
+import { test, after } from "node:test";
 import assert from "node:assert";
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+
+// Every temp directory a test makes is removed when the file finishes (tmp-hygiene.test.mjs guards this).
+const madeDirs = [];
+function mk(prefix) {
+  const d = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
+  madeDirs.push(d);
+  return d;
+}
+after(() => {
+  const root = path.resolve(os.tmpdir()) + path.sep;
+  for (const d of madeDirs) if (path.resolve(d).startsWith(root)) fs.rmSync(d, { recursive: true, force: true });
+});
 
 const here = path.dirname(new URL(import.meta.url).pathname);
 const SCRIPT = path.join(here, "test-diff.mjs");
@@ -22,7 +34,7 @@ function git(dir, ...args) {
 }
 
 function repo() {
-  const d = fs.mkdtempSync(path.join(os.tmpdir(), "tdiff-"));
+  const d = mk("tdiff-");
   git(d, "init", "-q");
   git(d, "config", "user.email", "t@t.t");
   git(d, "config", "user.name", "t");
@@ -141,7 +153,7 @@ test("UNTOUCHED warning", () => {
 });
 
 test("exit 2 outside a git repo", () => {
-  const d = fs.mkdtempSync(path.join(os.tmpdir(), "tdiff-nogit-"));
+  const d = mk("tdiff-nogit-");
   const r = run(["--base", "HEAD"], d);
   assert.strictEqual(r.code, 2);
 });

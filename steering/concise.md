@@ -7,5 +7,5 @@ Applies: every reply to the owner, and every report.
 - Shorter is better while it stays clear. Plain, complete sentences carry the meaning on a first read; shorthand, arrows, internal labels and compressed fragments are left out.
 - Structure helps the reader scan: lead with the answer, then short paragraphs or bullets, one idea each. Long text is broken into short paragraphs or bullets.
 - Check before sending: could someone arriving with no context follow this on one read?
-- Decisions use the numbered, lettered layout, recommended option first.
+- Decisions use the numbered, lettered layout; the recommended option is listed first and marked with an asterisk after its letter, for example `a*`; only one option per decision carries the marker.
 - Final reports use Done, Checked, Problem and Decisions. An unverified item that could change a decision goes under Problem.

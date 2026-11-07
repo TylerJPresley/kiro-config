@@ -1,9 +1,21 @@
-import { test } from "node:test";
+import { test, after } from "node:test";
 import assert from "node:assert";
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+
+// Every temp directory a test makes is removed when the file finishes (tmp-hygiene.test.mjs guards this).
+const madeDirs = [];
+function mk(prefix) {
+  const d = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
+  madeDirs.push(d);
+  return d;
+}
+after(() => {
+  const root = path.resolve(os.tmpdir()) + path.sep;
+  for (const d of madeDirs) if (path.resolve(d).startsWith(root)) fs.rmSync(d, { recursive: true, force: true });
+});
 
 const here = path.dirname(new URL(import.meta.url).pathname);
 const SCRIPT = path.join(here, "install.mjs");
@@ -31,7 +43,7 @@ function run(args) {
 }
 
 function tmp(prefix) {
-  return fs.mkdtempSync(path.join(os.tmpdir(), prefix));
+  return mk(prefix);
 }
 
 function writeFile(root, rel, body) {
@@ -174,4 +186,34 @@ test("runs steering-lint on target", () => {
   const r = run(["--source", src, "--target", target, "--check"]);
   assert.strictEqual(r.code, 1);
   assert.match(r.out, /steering-lint reported problems/);
+});
+
+function settingsCase(body) {
+  const src = makeSource();
+  const target = tmp("install-tgt-");
+  run(["--source", src, "--target", target]);
+  const settings = path.join(tmp("install-set-"), "cli.json");
+  if (body !== undefined) fs.writeFileSync(settings, body);
+  return run(["--source", src, "--target", target, "--settings", settings, "--check"]);
+}
+
+test("check fails when chat.disableInheritingDefaultResources is true", () => {
+  const r = settingsCase('{"chat.disableInheritingDefaultResources": true}');
+  assert.strictEqual(r.code, 1);
+  assert.match(r.out, /chat\.disableInheritingDefaultResources is true/);
+});
+
+test("check passes when the inheritance setting is false or absent", () => {
+  assert.strictEqual(settingsCase('{"chat.disableInheritingDefaultResources": false}').code, 0);
+  assert.strictEqual(settingsCase("{}").code, 0);
+  assert.strictEqual(settingsCase(undefined).code, 0);
+});
+
+test("hooks are installed with the other directories", () => {
+  const src = makeSource();
+  writeFile(src, "hooks/h.json", '{ "version": "v1", "hooks": [] }');
+  const target = tmp("install-tgt-");
+  const r = run(["--source", src, "--target", target]);
+  assert.strictEqual(r.code, 0);
+  assert.ok(fs.existsSync(path.join(target, "hooks/h.json")));
 });

@@ -2,5 +2,7 @@
   "chat.defaultModel": "auto",
   "mcp.loadedBefore": true,
   "chat.defaultAgent": "director",
-  "chat.disableTrustAllConfirmation": true
+  "chat.disableTrustAllConfirmation": true,
+  "chat.enableAutoAgentUpgrade": false,
+  "chat.agentEngine": "v3"
 }

@@ -3,6 +3,8 @@ sessions/
 session-index/
 logs/
 .kiro/
+cloud-cache/
+workspace-roots/
 
 # Local app/UI state
 settings/feed_state.json

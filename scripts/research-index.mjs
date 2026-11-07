@@ -57,6 +57,35 @@ function collect() {
   return entries;
 }
 
+// Normalise for quote matching: drop emphasis and backticks, blockquote markers, collapse whitespace.
+const norm = (t) => t.replace(/^[ \t]*>[ \t]?/gm, "").replace(/[*_`]/g, "").replace(/\s+/g, " ").trim();
+
+function sourceText(e) {
+  const files = e.split ? fs.readdirSync(e.dir).filter((f) => f.endsWith(".md")).sort().map((f) => path.join(e.dir, f)) : [e.file];
+  return norm(files.map((f) => fs.readFileSync(f, "utf8")).join("\n"));
+}
+
+function quotesOf(text) {
+  const body = text.replace(/^---\n[\s\S]*?\n---/, "");
+  const out = [];
+  for (const line of body.split("\n")) {
+    if (/^\s*>/.test(line)) { const q = norm(line); if (q) out.push(q); }
+    for (const m of line.matchAll(/Quote:[^"“\n]*["“]([^"”\n]{40,})["”]/g)) out.push(norm(m[1]));
+  }
+  return out;
+}
+
+function checkQuotes(entries) {
+  const bySlug = new Map(entries.filter((e) => e.kind === "source").map((e) => [e.slug, e]));
+  for (const e of entries) {
+    if (e.kind !== "finding" || !e.fm || !e.fm.from) continue;
+    const texts = (e.fm.from.match(/[A-Za-z0-9][\w.-]*/g) || []).filter((r) => bySlug.has(r)).map((r) => sourceText(bySlug.get(r)));
+    for (const q of quotesOf(fs.readFileSync(e.file, "utf8"))) {
+      if (!texts.some((t) => t.includes(q))) problem("BAD-QUOTE", `${e.relpath} "${q.slice(0, 60)}"`);
+    }
+  }
+}
+
 function validate(entries) {
   const sourceSlugs = new Set(entries.filter((e) => e.kind === "source").map((e) => e.slug));
   for (const e of entries) {
@@ -107,6 +136,7 @@ function render(entries) {
 const entries = collect();
 if (CHECK) {
   validate(entries);
+  checkQuotes(entries);
   const idxPath = path.join(DIR, "index.md");
   const current = fs.existsSync(idxPath) ? fs.readFileSync(idxPath, "utf8") : "";
   if (current !== render(entries)) problem("STALE-INDEX", path.relative(DIR, idxPath) || "index.md");

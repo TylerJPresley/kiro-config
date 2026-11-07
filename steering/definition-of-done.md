@@ -8,5 +8,4 @@ Applies: before calling any task done, fixed, passing or complete.
 - The blueprint, the code and the repo documents say the same thing. A difference is a defect, and the spec decides which side moves.
 - Work that is not in the tree is not done. A read-only turn that changed nothing says why.
 - The handoff reflects the new state before the work is called done.
-- Work that plan-and-verify calls small is done when its one check passes.
 - Unverified items are reported only when they could change the owner's decision, in one line. Otherwise nothing is said.

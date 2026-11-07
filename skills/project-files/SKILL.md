@@ -17,8 +17,11 @@ Intent: a project that lacks a core file gets a short, true starter, so each con
 3. Keep each file short and put each concern in its one home: what it is in `README.md`, how to change it in `CONTRIBUTING.md`, orientation in `AGENTS.md`. State a rule for changing the project in `CONTRIBUTING.md` and nowhere else.
 4. The `AGENTS.md` starter carries a `Licenses allowed:` line that the `audit` script reads for the license allow-list; set it to the project's accepted SPDX ids.
 5. Copy a starter from `references/`: `references/README.template.md`, `references/CONTRIBUTING.template.md`, `references/AGENTS.template.md`.
+6. When the project has checks to run, add `gate.mjs` at its root from `references/gate.template.mjs` and fill in the real checks; never leave the starter unfilled. A project with no checks has no `gate.mjs`.
 
 ## References
 - `references/README.template.md`
 - `references/CONTRIBUTING.template.md`
 - `references/AGENTS.template.md`
+- `references/gate.template.mjs`
+- `references/protected.template.json`

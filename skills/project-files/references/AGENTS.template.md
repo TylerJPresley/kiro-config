@@ -8,7 +8,7 @@
 
 ## Build and verify
 
-<the commands, including the full gate>
+<the commands. When the project has checks to run, it adds `gate.mjs` at its root and `node gate.mjs` is the gate.>
 
 ## Specification
 

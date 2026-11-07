@@ -1,10 +1,22 @@
-import { test } from "node:test";
+import { test, after } from "node:test";
 import assert from "node:assert";
 import { execFileSync } from "node:child_process";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+
+// Every temp directory a test makes is removed when the file finishes (tmp-hygiene.test.mjs guards this).
+const madeDirs = [];
+function mk(prefix) {
+  const d = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
+  madeDirs.push(d);
+  return d;
+}
+after(() => {
+  const root = path.resolve(os.tmpdir()) + path.sep;
+  for (const d of madeDirs) if (path.resolve(d).startsWith(root)) fs.rmSync(d, { recursive: true, force: true });
+});
 
 const here = path.dirname(new URL(import.meta.url).pathname);
 const SCRIPT = path.join(here, "research-index.mjs");
@@ -19,7 +31,7 @@ function run(args) {
 }
 
 function tmp() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), "rindex-"));
+  return mk("rindex-");
 }
 
 function write(dir, rel, body) {
@@ -152,4 +164,39 @@ test("legacy file without frontmatter flagged", () => {
   const r = run(["--dir", d, "--check"]);
   assert.strictEqual(r.code, 1);
   assert.match(r.out, /PROBLEM NO-FRONTMATTER.*old/);
+});
+
+// quote verification
+const REAL = "The quick brown fox jumps over the lazy dog near the river bank.";
+function quoteCase(findingBody, { listed = "[alpha]", alphaBody = `intro\n${REAL}\n`, betaBody = "other\n" } = {}) {
+  const d = tmp();
+  write(d, "sources/alpha.md", source({ origin: "https://example.com/a" }).replace(/body\n$/, alphaBody));
+  write(d, "sources/beta.md", source({ origin: "https://example.com/b" }).replace(/body\n$/, betaBody));
+  write(d, "findings/f.md", entry({ date: "2026-01-03", question: "q", summary: "s", from: listed, origin: "https://example.com/f" }, findingBody));
+  run(["--dir", d]);
+  return run(["--dir", d, "--check"]);
+}
+
+test("quote present in a listed source passes", () => {
+  const r = quoteCase(`> **The quick** brown fox  jumps over the \`lazy\` dog near the river bank.\n\nQuote: "${REAL}"\n`);
+  assert.strictEqual(r.code, 0, r.out);
+});
+
+test("invented quote fails with BAD-QUOTE", () => {
+  const r = quoteCase("> The slow green turtle crawls under the lazy dog near the river.\n");
+  assert.strictEqual(r.code, 1);
+  assert.match(r.out, /PROBLEM BAD-QUOTE findings\/f\.md "The slow green turtle/);
+  const r2 = quoteCase('Quote: "An invented sentence that is certainly longer than forty characters."\n');
+  assert.match(r2.out, /BAD-QUOTE/);
+});
+
+test("quote only in an unlisted source fails", () => {
+  const r = quoteCase(`> ${REAL}\n`, { alphaBody: "nothing here\n", betaBody: `${REAL}\n` });
+  assert.strictEqual(r.code, 1);
+  assert.match(r.out, /BAD-QUOTE/);
+});
+
+test("short inline quotes are ignored", () => {
+  const r = quoteCase('Quote: "not in any source at all"\n');
+  assert.strictEqual(r.code, 0, r.out);
 });

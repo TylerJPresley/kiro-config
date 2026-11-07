@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Install the steering, agents, skills and scripts into a target .kiro by sha256 compare.
-// usage: node install.mjs [--source DIR] [--target DIR=~/.kiro] [--dry-run] [--check]
+// Install the steering, agents, skills, scripts and hooks into a target .kiro by sha256 compare.
+// usage: node install.mjs [--source DIR] [--target DIR=~/.kiro] [--dry-run] [--check] [--settings FILE]
 // Copies only the four listed directories; a changed file is backed up first; EXTRA files
 // in the target are listed and kept; other target paths are left untouched.
 import fs from "node:fs";
@@ -9,7 +9,7 @@ import os from "node:os";
 import crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
 
-const DIRS = ["steering", "agents", "skills", "scripts"];
+const DIRS = ["steering", "agents", "skills", "scripts", "hooks"];
 
 const arg = (n, d) => {
   const i = process.argv.indexOf(n);
@@ -116,6 +116,20 @@ if (check) {
     } catch {
       problems++;
       console.log("check: steering-lint reported problems on the target");
+    }
+  }
+
+  // custom agents inherit default steering and skills unless this setting is true
+  const settingsFile = path.resolve(arg("--settings", path.join(target, "settings", "cli.json")));
+  if (fs.existsSync(settingsFile)) {
+    try {
+      if (JSON.parse(fs.readFileSync(settingsFile, "utf8"))["chat.disableInheritingDefaultResources"] === true) {
+        problems++;
+        console.log(`check: chat.disableInheritingDefaultResources is true in ${settingsFile}; agents would lose all steering and skills`);
+      }
+    } catch (e) {
+      problems++;
+      console.log(`check: ${settingsFile} is not valid JSON: ${e.message}`);
     }
   }
 

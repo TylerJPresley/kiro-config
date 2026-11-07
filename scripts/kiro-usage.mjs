@@ -9,13 +9,15 @@ const arg = process.argv[2] && !process.argv[2].startsWith("--") ? process.argv[
 const topN = Number(process.argv[process.argv.indexOf("--top") + 1]) || 10;
 const since = process.argv.includes("--since") ? Date.parse(process.argv[process.argv.indexOf("--since") + 1]) : 0;
 const files = fs.readdirSync(dir).filter((f) => f.endsWith(".json")).map((f) => ({ f, t: fs.statSync(path.join(dir, f)).mtimeMs })).filter((x) => x.t >= since).sort((a, b) => b.t - a.t);
-const pick = arg === "all" ? files : arg === "latest" ? files.slice(0, 1) : files.filter((x) => x.f.startsWith(arg));
 const credit = (m) => { const u = m?.metering_usage; if (u == null) return 0; if (typeof u === "number") return u; if (Array.isArray(u)) return u.reduce((s, x) => s + (Number(x?.value ?? x?.usage ?? 0) || 0), 0); return Number(u.value ?? u.usage ?? 0) || 0; };
 
+const readSession = (f) => { try { return JSON.parse(fs.readFileSync(path.join(dir, f), "utf8")); } catch { return null; } }; // one place: a malformed session file is skipped in every view
+const readable = files.filter((x) => readSession(x.f));
+const pick = arg === "all" ? readable : arg === "latest" ? readable.slice(0, 1) : readable.filter((x) => x.f.startsWith(arg));
 const turnsOf = (j) => { const t = j.session_state?.conversation_metadata?.user_turn_metadatas; return Array.isArray(t) ? t : Object.values(t ?? {}); };
 if (arg === "by-session") {
   const rows = [];
-  for (const { f } of files) { let j; try { j = JSON.parse(fs.readFileSync(path.join(dir, f), "utf8")); } catch { continue; } const a = turnsOf(j); if (!a.length) continue;
+  for (const { f } of files) { const j = readSession(f); if (!j) continue; const a = turnsOf(j); if (!a.length) continue;
     rows.push({ id: f.slice(0, 8), agent: j.session_state?.agent_name, cwd: (j.cwd ?? "").replace(os.homedir(), "~"), from: (j.created_at ?? "").slice(0, 10), to: (j.updated_at ?? "").slice(0, 10), turns: a.length, reqs: a.reduce((s, x) => s + (x.total_request_count ?? 0), 0), cred: a.reduce((s, x) => s + credit(x), 0), maxctx: Math.max(...a.map((x) => x.final_context_usage_percentage ?? 0)), title: (j.title ?? "").replace(/\s+/g, " ").slice(0, 50) }); }
   const tot = rows.reduce((s, r) => s + r.cred, 0);
   console.log(`TOTAL ${Math.round(tot)} credits, ${rows.length} sessions\n\nTOP SESSIONS`);
@@ -27,7 +29,7 @@ if (arg === "by-session") {
 }
 if (arg === "by-context") {
   const agent = process.argv.includes("--agent") ? process.argv[process.argv.indexOf("--agent") + 1] : "director"; const b = {};
-  for (const { f } of files) { let j; try { j = JSON.parse(fs.readFileSync(path.join(dir, f), "utf8")); } catch { continue; } if (j.session_state?.agent_name !== agent || j.parent_session_id) continue;
+  for (const { f } of files) { const j = readSession(f); if (!j) continue; if (j.session_state?.agent_name !== agent || j.parent_session_id) continue;
     for (const x of turnsOf(j)) { const r = x.total_request_count ?? 0; if (!r) continue; const k = Math.floor((x.final_context_usage_percentage ?? 0) / 10) * 10; const v = (b[k] ??= { c: 0, r: 0, n: 0 }); v.c += credit(x); v.r += r; v.n++; } }
   console.log(`agent ${agent}: context-bucket  turns  credits  requests  credits/request`);
   for (const [k, v] of Object.entries(b).sort((x, y) => x[0] - y[0])) console.log(`${String(k).padStart(3)}%  ${String(v.n).padStart(5)} ${String(Math.round(v.c)).padStart(7)} ${String(v.r).padStart(8)}  ${(v.c / v.r).toFixed(2)}`);
@@ -35,7 +37,7 @@ if (arg === "by-context") {
 }
 let all = [];
 for (const { f } of pick) {
-  const j = JSON.parse(fs.readFileSync(path.join(dir, f), "utf8")); const sa = j.session_state?.agent_name ?? "?"; const m = j.session_state?.conversation_metadata;
+  const j = readSession(f); if (!j) continue; const sa = j.session_state?.agent_name ?? "?"; const m = j.session_state?.conversation_metadata;
   const t = m?.user_turn_metadatas; const turns = Array.isArray(t) ? t : Object.values(t ?? {});
   turns.forEach((x, i) => all.push({ s: f.slice(0, 8), i, agent: sa, parent: x.loop_id?.agent_id?.parent_id, inp: x.input_token_count ?? 0, out: x.output_token_count ?? 0, cr: x.cache_read_input_token_count ?? 0, cw: x.cache_write_input_token_count ?? 0, cycles: x.number_of_cycles ?? 0, reqs: x.total_request_count ?? 0, secs: x.turn_duration?.secs ?? (typeof x.turn_duration === "number" ? x.turn_duration : 0), ctx: x.final_context_usage_percentage ?? 0, cred: credit(x), tools: x.builtin_tool_uses ? Object.values(x.builtin_tool_uses).reduce((a, b) => a + (Number(b) || 0), 0) : 0 }));
 }
@@ -64,7 +66,7 @@ const mb = (n) => (n / 1e6).toFixed(1);
   const subs = []; const main = { calls: 0, out: 0, inn: 0 };
   for (const { f } of pick) { const jl = path.join(dir, f.slice(0, -5) + ".jsonl"); if (fs.existsSync(jl)) { const m = measure(jl); for (const k of Object.keys(main)) main[k] += m[k]; } }
   for (const { f } of files) {
-    let j; try { j = JSON.parse(fs.readFileSync(path.join(dir, f), "utf8")); } catch { continue; }
+    const j = readSession(f); if (!j) continue;
     if (!j.parent_session_id || (arg !== "all" && !ids.has(j.parent_session_id))) continue;
     const jl = path.join(dir, f.slice(0, -5) + ".jsonl"); if (!fs.existsSync(jl)) continue;
     subs.push({ id: f.slice(0, 8), title: (j.title ?? "").replace(/\s+/g, " ").slice(0, 40), ...measure(jl) });
