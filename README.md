@@ -25,7 +25,7 @@ Counts: `ls steering | wc -l` returns 18 steering files. Steering files are shor
 The always-on files stay short so that anything countable or checkable is done by a program, giving the same answer every time. The model's own judgment is still probabilistic, so the config limits where that judgment is trusted and requires evidence for claims.
 
 **Mechanically enforced** (a script or permission rule fails if it is broken):
-- `scripts/steering-lint.mjs` no longer caps per-file size; it prints the total size of the always-on set (bytes, and tokens estimated as bytes ÷ 4) for information, and the total is not capped.
+- `scripts/steering-lint.mjs` prints the total size of the always-on set (bytes, and tokens estimated as bytes ÷ 4) for information; the total is not capped.
 - Skill descriptions are capped at 320 characters. They are the only part of a skill that is always loaded; the body loads on demand.
 - The lint fails when a line of 60+ characters appears verbatim in two steering files. It does not catch a rule that has been reworded.
 - `lessons.mjs` and `steering-lint.mjs` run with no model: same input, same output.
@@ -209,7 +209,7 @@ Caveats:
 
 - **Secrets are gitignored**, so a fresh clone has no `settings/mcp.json`, no `.env`, no keys. Supply your own locally; they won't be committed.
 - **`settings/` and `sessions/` are local.** Your CLI state, session history, and logs are machine-specific and stay out of the repo.
-- **Agents target Kiro CLI V3.** The agents require V3 and V2 must not be used. Commits removed the legacy `toolsSettings` and `allowedTools` keys; V2 agents would have no restrictions.
+- **Agents target Kiro CLI V3.** The agents carry their limits as `permissions.rules` in each JSON file, enforced by V3. Each agent denies destructive operations, secrets, and write outside its scope.
 - **Agents assume a project `AGENTS.md`** for project facts (gate command). Without one, agents will say so and ask rather than guess.
 - Steering and skills apply to *every* Kiro session once installed globally — adopt them deliberately.
 
