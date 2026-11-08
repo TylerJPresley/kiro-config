@@ -201,7 +201,7 @@ Every diagram has a title, one scope, and a key if it uses symbols, colours or s
    - Layer 2: what the subject is divided into, and what each part touches inside and outside.
    - Layer 3: for each part, what it must do, what it needs and what it offers.
    - Layer 4: what exactly the part is made of, with what values.
-   When a fact is missing, write `Not supplied: <what is needed>` and ask for it. Never invent it.
+   Ask the owner for intent: the need, why each part exists and what it must achieve. Choose Layer 4 values and specific means that serve that intent, and record each as a decision with its reason, which the owner can change. When the intent itself, or a fact about the world, is missing, write `Not supplied: <what is needed>` and ask for it. Never invent it.
 2. Write Layer 1, then Layer 2. Stop there for a subject made of independent members.
 3. Write Layer 3 for each part that needs it.
 4. Write Layer 4 only where Layer 3 leaves a gap.

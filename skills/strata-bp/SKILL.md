@@ -13,11 +13,11 @@ Intent: describe a subject in layers, each holding one kind of content, so the s
 
 ## How to work
 1. Read `references/strata-bp-guide.md` first.
-2. Gather facts as assertions and have the owner confirm or correct them. Ask by layer, as the guide's Procedure says.
+2. Gather the owner's intent as assertions to confirm or correct, layer by layer as the guide's Procedure says, and derive the specifics from it.
 3. Write Layer 1, then Layer 2. Write later layers only for the parts a maker needs them for.
 4. Write anything that happens as Given, When, Then.
 5. Lay it out as the guide's Formatting section says. A diagram is optional and supplements the text; the text is the source of truth.
-6. For a missing fact write `Not supplied: <what is needed>` and ask for it. Never invent it.
+6. For missing intent or a fact about the world, write `Not supplied: <what is needed>` and ask for it. Never invent it. Record each specific you choose as a decision with its reason.
 7. Run the guide's checklists on each layer; fix every no, or note why.
 8. Run `scripts/strata-bp-lint.mjs` on the document; it reports warnings, and you fix or explain each.
 9. See `examples/strata-bp-example.md` for one way to fill the layers.
