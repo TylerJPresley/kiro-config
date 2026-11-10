@@ -12,7 +12,11 @@ This config runs with the training wheels off. `settings/cli.json` sets `chat.di
 
 Work flows through one loop. The Director holds the goal, routes each step to the right specialist by capability, and decides done from script evidence. Each specialist has a narrow role, a usual write zone, and hard deny rules: the Architect owns blueprints; the Planner designs before anyone builds; the Implementer builds code; the Reviewer checks independent of the builder; the Researcher looks up facts with sources; the Documenter keeps the README and docs true. Scripts verify and enumerate; models decide and design.
 
-The loop stays small: small work (one or two files, no design decision, nothing depending on it) is just done and checked by one script. Larger work is planned first by the Planner, then built by the Implementer, then verified by the Reviewer independent of the builder (so the agent that produced the work never verifies it). If a step fails, fix the weakest point and re-check only that. If the same approach fails twice, change approach and say so. When a feature closes, the Director routes the real-environment check, the changelog update, and the tag.
+The loop stays small: small work (one or two files, no design decision, nothing depending on it) is just done and checked by one script. Larger work is planned first by the Planner, then built by the Implementer, then verified by the Reviewer independent of the builder (so the agent that produced the work never verifies it). If a step fails, fix the weakest point and re-check only that. If the same approach fails twice, change approach and say so. When a feature closes, the Director routes the real-environment check, the changelog update, and the push.
+
+Work is spec-driven: the blueprint defines what is built, and the code follows it. The Architect runs discovery with the owner to fill the blanks in a blueprint before building starts. Plans are divided at seams that each leave the project working (each seam is a commit). Features and plans track changes to the blueprints. Build progress lives in `_internal/` (the thinking folder) and the handoff, which new sessions read to resume with zero context.
+
+The git workflow follows the baseline in `steering/git-standards.md`; this repo is **trunk only** on `main` (see `CONTRIBUTING.md`).
 
 Work is spec-driven: the blueprint defines what is built, and the code follows it. The Architect runs discovery with the owner to fill the blanks in a blueprint before building starts. Plans are divided at seams that each leave the project working (each seam is a commit). Features and plans track changes to the blueprints. Build progress lives in `_internal/` (the thinking folder) and the handoff, which new sessions read to resume with zero context.
 
@@ -115,7 +119,7 @@ The agent model is a **Director** that holds the goal and routes work, plus **sp
 | `director` | Team lead: holds the goal, routes work to the right specialist by capability, verifies by script evidence. Pushes completed features through `scripts/push.mjs`. Does not implement. | `_internal/handoff.md`, `_internal/decisions.md`, `_internal/lessons.md` |
 | `architect` | Owns blueprints (vision, architecture, components, specification via strata-bp) and runs discovery with the owner to fill blanks. Writes blueprint markdown only. | `blueprint.md`, `*-blueprint.md` |
 | `planner` | Designs: turns outcomes into plans with pinned decisions, criteria, and seams. Re-plans after a step fails twice. | `_internal/plans/**`, `_internal/proposals/**` |
-| `implementer` | Builds to spec, tests first, runs the project gate, commits at each seam and tags to close features. | Source, tests, commits and feature/release tags; denied: `blueprint.md`, `AGENTS.md`, README/CONTRIBUTING/CHANGELOG/LICENSE/`docs/`, `.kiro/**`, `.github/**`, `.git/**` and secrets |
+| `implementer` | Builds to spec, tests first, runs the project gate, commits at each seam. | Source, tests, commits; denied: `blueprint.md`, `AGENTS.md`, README/CONTRIBUTING/CHANGELOG/LICENSE/`docs/`, `.kiro/**`, `.github/**`, `.git/**` and secrets |
 | `reviewer` | Independent check on finished work. Judges against plan and blueprints in fresh context; runs real-environment checks when needed. Writes verdict files. | `_internal/plans/<slug>.review.md` (verdict: PASS or FAIL, then findings) |
 | `security-reviewer` | Audits dependencies and code for security and licenses in fresh context, read-only. Judges only what the audit script flags. | `_internal/plans/<slug>.security.md` (risk report: PASS, FAIL or ESCALATE) |
 | `researcher` | Investigates assigned questions with sources; network-enabled; reports gaps when sources are missing. | `_internal/research/**` (in research-cache format) |
@@ -185,7 +189,7 @@ Deterministic Node helpers (require Node 18+). Run them from within the project 
 | `research-index.mjs` | Keeps the research cache's index current and checks that each entry has its origin and date. | `node ~/.kiro/scripts/research-index.mjs` |
 | `sync-skill.mjs` | Copies a skill from its source repo into `~/.kiro/skills` and detects drift. | `node ~/.kiro/scripts/sync-skill.mjs <skill> <source-url>` |
 | `kiro-usage.mjs` | Shows where tokens and credits go in a session. | `node ~/.kiro/scripts/kiro-usage.mjs` |
-| `push.mjs` | Pushes a completed plan to origin from a clean tree. Only origin, current branch and named tags, no force or delete. | `node ~/.kiro/scripts/push.mjs [--dry-run] [--tag NAME]` |
+| `push.mjs` | Pushes a completed plan's branch to origin from a clean tree. Refuses main, master and develop unless --integrate; only origin and the current branch, no tags, no force or delete. | `node ~/.kiro/scripts/push.mjs [--dry-run] [--integrate]` |
 | `install.mjs` | Puts this config on a machine and checks it. | `node ~/.kiro/scripts/install.mjs` |
 | `usage-breakdown.mjs` | Shows what fills a session's context. | `node ~/.kiro/scripts/usage-breakdown.mjs` |
 
