@@ -18,8 +18,6 @@ Work is spec-driven: the blueprint defines what is built, and the code follows i
 
 The git workflow follows the baseline in `steering/git-standards.md`; this repo is **trunk only** on `main` (see `CONTRIBUTING.md`).
 
-Work is spec-driven: the blueprint defines what is built, and the code follows it. The Architect runs discovery with the owner to fill the blanks in a blueprint before building starts. Plans are divided at seams that each leave the project working (each seam is a commit). Features and plans track changes to the blueprints. Build progress lives in `_internal/` (the thinking folder) and the handoff, which new sessions read to resume with zero context.
-
 ## Rules always loaded
 
 Steering files are always-on rules Kiro reads every session. They fit into a few topics: how work flows (plan-and-verify, features, specs, definition-of-done, quality-testing); how agents think and communicate (confidence-and-conflicts, decision-rights, concise, framing, discovery); safety and security (fix-forward, security); how projects work (project-contract, project-files, git-standards); and how sessions work (session-tracking, thinking-folder, script-first).
