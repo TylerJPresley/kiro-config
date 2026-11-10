@@ -49,7 +49,7 @@ function makeScratch() {
 }
 
 // Build a working repo "w" with a bare origin "r" in the same temp dir. Returns paths.
-function setup({ gate, ignore = "_internal/\n", seedOrigin = true } = {}) {
+function setup({ gate, ignore = "_internal/\n", seedOrigin = true, branch } = {}) {
   const s = makeScratch();
   const w = path.join(s.dir, "w");
   const origin = path.join(s.dir, "r");
@@ -65,6 +65,7 @@ function setup({ gate, ignore = "_internal/\n", seedOrigin = true } = {}) {
   // Seed origin with the init commit so the root commit is never in a push range,
   // unless the scenario wants a brand-new branch (seedOrigin: false).
   if (seedOrigin) g("push", "-q", "origin", "main");
+  if (branch) g("checkout", "-q", "-b", branch);
   return { ...s, w, origin, g };
 }
 
@@ -78,13 +79,19 @@ function originTip(origin, env, ref = "refs/heads/main") {
 }
 
 // Run the script in w; return { code, out } where out is combined stdout+stderr.
-function run(w, env, args = [], extraEnv = {}) {
+// runPlain passes the arguments as given; run prepends --integrate so the mechanics tests
+// can push the fixture's main.
+function runPlain(w, env, args = [], extraEnv = {}) {
   const r = spawnSync("node", [SCRIPT, ...args], {
     cwd: w,
     env: { ...env, ...extraEnv },
     encoding: "utf8",
   });
   return { code: r.status, out: (r.stdout || "") + (r.stderr || "") };
+}
+
+function run(w, env, args = [], extraEnv = {}) {
+  return runPlain(w, env, ["--integrate", ...args], extraEnv);
 }
 
 // Add and commit a file, return the new HEAD sha.
@@ -119,6 +126,7 @@ for (const [label, bad, kind] of [
   ["remote", "--remote", "remote"],
   ["positional", "main", "unknown"],
   ["unknown", "--nope", "unknown"],
+  ["tag", "--tag", "unknown"],
 ]) {
   test(`[args] rejects ${label}`, () => {
     const ctx = setup({ gate: PASS_GATE });
@@ -130,12 +138,18 @@ for (const [label, bad, kind] of [
   });
 }
 
-test("[args] accepts --dry-run and --tag", () => {
+test("[args] accepts --dry-run and --integrate", () => {
   const ctx = setup({ gate: PASS_GATE });
-  const head = commitFile(ctx, "a.txt", "a\n", "docs: a");
-  ctx.g("tag", "v1");
-  const r = run(ctx.w, ctx.env, ["--dry-run", "--tag", "v1"]);
+  commitFile(ctx, "a.txt", "a\n", "docs: a");
+  const r = runPlain(ctx.w, ctx.env, ["--dry-run", "--integrate"]);
   assert.equal(r.code, 0, r.out);
+});
+
+test("[args] rejects --tag v1", () => {
+  const ctx = setup({ gate: PASS_GATE });
+  const r = runPlain(ctx.w, ctx.env, ["--tag", "v1"]);
+  assert.equal(r.code, 2, r.out);
+  assert.match(r.out, /\[args\]/);
 });
 
 // ---------------------------------------------------------------------------
@@ -212,7 +226,7 @@ test("[push] a diverged origin refuses and stays unchanged", () => {
 });
 
 // ---------------------------------------------------------------------------
-// no review, no gate, tags only
+// no review, no gate
 // ---------------------------------------------------------------------------
 test("[no-review] a feat commit with no verdict pushes", () => {
   const ctx = setup();
@@ -220,7 +234,7 @@ test("[no-review] a feat commit with no verdict pushes", () => {
   const r = run(ctx.w, ctx.env, []);
   assert.equal(r.code, 0, r.out);
   assert.equal(originTip(ctx.origin, ctx.env), head);
-  assert.match(r.out, /^push: ok main \(1 commits, 0 tags\)/);
+  assert.match(r.out, /^push: ok main \(1 commits\)/);
 });
 
 test("[no-gate-run] a gate.mjs that would fail is not run and the push lands", () => {
@@ -232,45 +246,6 @@ test("[no-gate-run] a gate.mjs that would fail is not run and the push lands", (
   assert.equal(r.code, 0, r.out);
   assert.equal(originTip(ctx.origin, ctx.env), head);
   assert.ok(!fs.existsSync(path.join(ctx.w, marker)), "the gate ran");
-});
-
-test("[tag-only] tags-only push lands", () => {
-  const ctx = setup();
-  ctx.g("tag", "v1");
-  const r = run(ctx.w, ctx.env, ["--tag", "v1"]);
-  assert.equal(r.code, 0, r.out);
-  assert.match(r.out, /\(0 commits, 1 tags\)/);
-  assert.ok(originTip(ctx.origin, ctx.env, "refs/tags/v1"), "tag not on origin");
-});
-
-// ---------------------------------------------------------------------------
-// [tag-name] [tag]
-// ---------------------------------------------------------------------------
-for (const bad of [":v1", "+v1", "-x", "a b", ".hidden"]) {
-  test(`[tag-name] rejects ${JSON.stringify(bad)}`, () => {
-    const ctx = setup({ gate: PASS_GATE });
-    const head = commitFile(ctx, "a.txt", "a\n", "docs: a");
-    const r = run(ctx.w, ctx.env, ["--dry-run", "--tag", bad]);
-    assert.equal(r.code, 2, r.out);
-    assert.match(r.out, /\[tag-name\]/);
-  });
-}
-
-test("[tag] a missing tag refuses", () => {
-  const ctx = setup({ gate: PASS_GATE });
-  commitFile(ctx, "a.txt", "a\n", "docs: a");
-  const r = run(ctx.w, ctx.env, ["--dry-run", "--tag", "nope"]);
-  assert.equal(r.code, 1, r.out);
-  assert.match(r.out, /\[tag\]/);
-});
-
-test("tag push lands on origin", () => {
-  const ctx = setup({ gate: PASS_GATE });
-  commitFile(ctx, "a.txt", "a\n", "docs: a");
-  ctx.g("tag", "v1");
-  const r = run(ctx.w, ctx.env, ["--tag", "v1"]);
-  assert.equal(r.code, 0, r.out);
-  assert.ok(originTip(ctx.origin, ctx.env, "refs/tags/v1"), "tag not on origin");
 });
 
 // ---------------------------------------------------------------------------
@@ -295,8 +270,8 @@ test("a new branch with no remote tip pushes", () => {
 test("a second dry run prints identical stdout", () => {
   const ctx = setup({ gate: PASS_GATE });
   commitFile(ctx, "a.txt", "a\n", "docs: a");
-  const r1 = spawnSync("node", [SCRIPT, "--dry-run"], { cwd: ctx.w, env: ctx.env, encoding: "utf8" });
-  const r2 = spawnSync("node", [SCRIPT, "--dry-run"], { cwd: ctx.w, env: ctx.env, encoding: "utf8" });
+  const r1 = spawnSync("node", [SCRIPT, "--integrate", "--dry-run"], { cwd: ctx.w, env: ctx.env, encoding: "utf8" });
+  const r2 = spawnSync("node", [SCRIPT, "--integrate", "--dry-run"], { cwd: ctx.w, env: ctx.env, encoding: "utf8" });
   assert.equal(r1.stdout, r2.stdout);
   assert.match(r1.stdout, /dry-run ok/);
 });
@@ -331,4 +306,68 @@ test("a second bare remote named upstream stays untouched", () => {
   assert.equal(r.code, 0, r.out);
   assert.equal(originTip(ctx.origin, ctx.env), head);
   assert.equal(originTip(upstream, ctx.env), null);
+});
+
+// ---------------------------------------------------------------------------
+// [protected] main, master and develop need --integrate
+// ---------------------------------------------------------------------------
+test("[protected] main without --integrate refuses", () => {
+  const ctx = setup({ gate: PASS_GATE });
+  const before = originTip(ctx.origin, ctx.env);
+  commitFile(ctx, "a.txt", "a\n", "docs: a");
+  const r = runPlain(ctx.w, ctx.env, []);
+  assert.equal(r.code, 1, r.out);
+  assert.match(r.out, /\[protected\]/);
+  assert.equal(originTip(ctx.origin, ctx.env), before);
+});
+
+test("[protected] --dry-run also refuses on main", () => {
+  const ctx = setup({ gate: PASS_GATE });
+  commitFile(ctx, "a.txt", "a\n", "docs: a");
+  const r = runPlain(ctx.w, ctx.env, ["--dry-run"]);
+  assert.equal(r.code, 1, r.out);
+  assert.match(r.out, /\[protected\]/);
+});
+
+for (const name of ["develop", "master"]) {
+  test(`[protected] ${name} refuses`, () => {
+    const ctx = setup({ gate: PASS_GATE, branch: name });
+    commitFile(ctx, "a.txt", "a\n", "docs: a");
+    const r = runPlain(ctx.w, ctx.env, []);
+    assert.equal(r.code, 1, r.out);
+    assert.match(r.out, /\[protected\]/);
+    assert.equal(originTip(ctx.origin, ctx.env, `refs/heads/${name}`), null);
+  });
+}
+
+test("[protected] --integrate on develop pushes", () => {
+  const ctx = setup({ gate: PASS_GATE, branch: "develop" });
+  const head = commitFile(ctx, "a.txt", "a\n", "docs: a");
+  const r = runPlain(ctx.w, ctx.env, ["--integrate"]);
+  assert.equal(r.code, 0, r.out);
+  assert.equal(originTip(ctx.origin, ctx.env, "refs/heads/develop"), head);
+});
+
+test("an engineer branch dev/ann-dev pushes with no flag", () => {
+  const ctx = setup({ gate: PASS_GATE, branch: "dev/ann-dev" });
+  const head = commitFile(ctx, "a.txt", "a\n", "docs: a");
+  const r = runPlain(ctx.w, ctx.env, []);
+  assert.equal(r.code, 0, r.out);
+  assert.equal(originTip(ctx.origin, ctx.env, "refs/heads/dev/ann-dev"), head);
+});
+
+test("a feature branch pushes with no flag", () => {
+  const ctx = setup({ gate: PASS_GATE, branch: "feature/x" });
+  const head = commitFile(ctx, "a.txt", "a\n", "docs: a");
+  const r = runPlain(ctx.w, ctx.env, []);
+  assert.equal(r.code, 0, r.out);
+  assert.equal(originTip(ctx.origin, ctx.env, "refs/heads/feature/x"), head);
+});
+
+test("[protected] check runs before [dirty]", () => {
+  const ctx = setup({ gate: PASS_GATE });
+  fs.writeFileSync(path.join(ctx.w, "new.txt"), "x\n");
+  const r = runPlain(ctx.w, ctx.env, []);
+  assert.equal(r.code, 1, r.out);
+  assert.match(r.out, /\[protected\]/);
 });
