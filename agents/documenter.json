@@ -181,12 +181,24 @@
         "match": [
           "git add *",
           "git commit *",
-          "git tag *",
           "git -C * add *",
-          "git -C * commit *",
-          "git -C * tag *"
+          "git -C * commit *"
         ],
         "effect": "allow"
+      },
+      {
+        "capability": "shell",
+        "match": [
+          "git tag *",
+          "git -C * tag *"
+        ],
+        "exclude": [
+          "git tag -l*",
+          "git tag --list*",
+          "git -C * tag -l*",
+          "git -C * tag --list*"
+        ],
+        "effect": "deny"
       },
       {
         "capability": "fs_write",
