@@ -18,6 +18,13 @@
 
 <files and folders an agent leaves unchanged>
 
+## Git
+
+Branch model: <gitflow, or trunk only>
+Release branch: <main>
+Integration branch: <develop, or none>
+Engineer branch: <dev/<engineer>, or none when trunk only>
+
 Licenses allowed: MIT, Apache-2.0, BSD-3-Clause, ISC
 
 Follow `CONTRIBUTING.md` for this project's standards.
