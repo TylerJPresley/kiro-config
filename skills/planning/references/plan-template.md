@@ -8,7 +8,7 @@ Outcome of the feature: the command that proves it, and the reviewer's verdict.
 Non-goals: what this plan does not do.
 
 ## 2. Blueprint change
-Reference the blueprint section the Architect drafted and the owner approved. The plan follows it; it does not restate or re-decide it.
+Reference the blueprint section Strata drafted and the owner approved. The plan follows it; it does not restate or re-decide it.
 
 ## 3. Pinned decisions
 One line each, each with the reason it was chosen. Mark an owner's decision and carry it to him through a normal reply.

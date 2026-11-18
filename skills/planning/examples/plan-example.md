@@ -8,7 +8,7 @@ Outcome of the feature: `node --test test/slugify.test.mjs` passes and the revie
 Non-goals: transliterating non-ASCII letters; configuring the separator.
 
 ## 2. Blueprint change
-Follows the blueprint section "URLs" the Architect drafted and the owner approved: a slug is lowercase ASCII words joined by single hyphens, with no leading or trailing hyphen.
+Follows the blueprint section "URLs" Strata drafted and the owner approved: a slug is lowercase ASCII words joined by single hyphens, with no leading or trailing hyphen.
 
 ## 3. Pinned decisions
 - D1 Separator is `-` — matches the blueprint's "joined by single hyphens".

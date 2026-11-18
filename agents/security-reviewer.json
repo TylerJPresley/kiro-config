@@ -131,6 +131,8 @@
       {
         "capability": "shell",
         "match": [
+          "rm _internal/*",
+          "rm -* _internal/*",
           "rm _internal/scratch/*",
           "rm -* _internal/scratch/*",
           "rm -* _internal/scratch",
@@ -254,6 +256,7 @@
         "match": [
           "**/blueprint.md",
           "**/*-blueprint.md",
+          "**/sbp-*.md",
           "**/.env",
           "**/.env.*",
           "**/*.pem",
@@ -306,6 +309,24 @@
       {
         "capability": "skill",
         "effect": "allow"
+      },
+      {
+        "capability": "shell",
+        "match": [
+          "rm _internal/* *",
+          "rm -* _internal/* *"
+        ],
+        "effect": "ask"
+      },
+      {
+        "capability": "shell",
+        "match": [
+          "rm _internal",
+          "rm _internal/",
+          "rm -* _internal",
+          "rm -* _internal/"
+        ],
+        "effect": "deny"
       }
     ]
   }

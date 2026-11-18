@@ -419,6 +419,7 @@
         "capability": "shell",
         "match": [
           "rm *blueprint.md*",
+          "rm *sbp-*.md*",
           "rm *AGENTS.md*",
           "rm *README.md*",
           "rm *CONTRIBUTING.md*",
@@ -531,6 +532,7 @@
         "match": [
           "**/blueprint.md",
           "**/*-blueprint.md",
+          "**/sbp-*.md",
           "AGENTS.md",
           "README.md",
           "CONTRIBUTING.md",
