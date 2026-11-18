@@ -31,3 +31,7 @@ backups/
 
 # Agent working notes, scratch and backups (see steering/thinking-folder.md)
 _internal/
+
+# Per-session identity and lease state (local)
+identities/
+session-leases/
