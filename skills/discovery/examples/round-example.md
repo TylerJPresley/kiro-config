@@ -41,4 +41,4 @@ The owner cannot decide the exact wording of the summary line by description alo
 nothing matched in 42 files (0.3s)
 ```
 
-The owner reacts ("drop the timing; add the directory"), and Round 3 continues from the reaction. Each settled answer becomes a draft line in the strata-bp documents.
+The owner reacts ("drop the timing; add the directory"), and Round 3 continues from the reaction. Each settled answer becomes a draft line in the strata-blueprints documents.

@@ -18,7 +18,7 @@ Intent: a blueprint whose blanks are filled with the owner's intent, so building
 3. Look up facts yourself; ask the owner for intent and direction. The owner supplies a detail only when he chooses to.
 4. Treat a stated requirement as a claim to examine: push a loose term until it has a testable definition, and name the contradiction when two answers collide.
 5. Answer a question that can only be settled by reacting to something with a throwaway the owner reacts to, then continue the next round from the reaction. `examples/round-example.md` shows a round and its follow-up.
-6. Write each answer into the strata-bp documents as a draft, and the owner approves the wording.
+6. Write each answer into the strata-blueprints documents as a draft, and the owner approves the wording.
 7. End when no open questions remain and the owner confirms the shared understanding. Building starts after that.
 
 ## References

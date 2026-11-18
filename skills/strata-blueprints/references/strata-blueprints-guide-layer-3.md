@@ -1,0 +1,157 @@
+# Strata Blueprints guide: Layer 3, Detail
+Load while interviewing for, writing or checking Layer 3. Each Ask the owner entry is asked for each part.
+
+- **Scope and shows:** one part. It shows the part's pieces, its seams, its concepts, its rules, and what the part is made with.
+- **Intent:** how one part does its job and what it is made with. A part's Detail is an entry in the parent's stack, under `### <Part> (part)` with each topic as `#### N. <Topic>`, or the part's own stack, both named in Layer 2 Standing.
+- **Audience:** the makers and reviewers of that part.
+- **Success:** Given one part's entry, when a maker reads it, then they can make the part and check it: what it does, what it offers and needs at each seam, what it is made of, and the values at each seam, without asking.
+- **Status:** written for each part a maker needs it for.
+- **Rests on:** Layers 1 and 2; see "How the layers depend on each other" in the core guide.
+- **Contents:**
+  1. **Responsibility:** what the part is accountable for.
+  2. **Concepts and states:** what the part works with, and the states it moves through.
+  3. **Seams:** for each Layer 2 seam this part takes part in, named by that seam `<From> to <To>`, what this part offers or needs there, whatever the means. It may name what crosses, and why, in a few words so the entry reads alone; Layer 2 owns the full account and this entry does not copy it.
+  4. **Rules:** how the part acts, as scenarios, each saying which Layer 1 scenario it realizes where it realizes one. Each scenario can be run as a check.
+  5. **Inside:** the part's pieces, each with a name and typed as a piece (beside the name or by this topic), with no specific means.
+  6. **Limits:** the checkable share of the Layer 1 qualities for this part, means-neutral.
+  7. **Construction:** the specific means (tools, materials, methods), how the pieces are assembled, how the part is run where it matters, and the exact formats, values and tolerances at each seam; values are chosen to meet the Limits. Written where Rules and Seams leave a gap a maker needs closed.
+  8. **Costs:** what the part takes to build, run and change, and who pays, with the amounts.
+  9. **Risks:** what could go wrong with the part, how badly and what answers it.
+  10. **Open Concerns:** what has been raised about the part and is not yet settled, and who raised it.
+  11. **Assumptions:** what the part's rules rest on.
+  12. **Decisions:** the decisions about the part's shape that Construction does not hold, each with its reason.
+- **Topics:**
+  - **Responsibility**
+    - **How to write it:**
+      - For: states what the part is accountable for, so its edges are clear and it matches Layer 2.
+      - Write: one or two sentences that start from the part's one-line responsibility in Layer 2 and say what the part answers for.
+      - Example:
+        - Holds each commitment and everything true about it.
+        - Answers for saving a new one, changing it, marking it done and keeping it findable, so that nothing the keeper saved is lost.
+      - Mistake: widening it beyond the Layer 2 line. A different responsibility is a change to Layer 2 first.
+    - **Ask the owner:** what must this part do, and what must it never do? Not supplied: the limit of the duty.
+    - **Check:**
+      - [ ] Is the part's responsibility stated, and does it match Layer 2?
+  - **Concepts and states**
+    - **How to write it:**
+      - For: names what the part works with and the states it moves through, so the rules can use exact words.
+      - Write: one bullet per concept, and for anything that changes over time, its states. Use the Layer 1 vocabulary where it has the term.
+      - Example:
+        - A commitment, with its text, an optional due value, and the grouping it belongs to.
+        - A commitment's state: active (to do), done (finished but kept) or removed.
+      - Mistake: listing storage or tools. Concepts are what the part reasons about; tools belong in Construction.
+    - **Ask the owner:** what does it work with, what states does it pass through, in what order, what moves it on, back or to abandoned? Not supplied: a trigger or state.
+    - **Check:**
+      - [ ] Are its concepts and states listed?
+  - **Seams**
+    - **How to write it:**
+      - For: states what this part offers and needs at each seam it takes part in, so the makers on both sides can work apart.
+      - Write: one bullet per Layer 2 seam this part takes part in, `<From> to <To>, offers:`, `needs:` or `offers and needs:`, then what, whatever the means. Name what crosses in a few words and add what this part commits to (its form, content or condition); the full account of what crosses and why stays in Layer 2.
+      - Example:
+        - Access to Ledger, needs: a keeper identity that Access has already proven, passed with every request.
+        - Ledger to Timing, offers: each commitment's due day or time, as a date and time that carries the keeper's time zone.
+      - Mistake: copying Layer 2's account of what crosses and why. Layer 3 adds what this part offers or needs.
+    - **Ask the owner:** at each seam this part takes, what does it offer or need, in what form? Not supplied: the form.
+    - **Check:**
+      - [ ] Does every Layer 2 seam the part takes part in have its offers and needs, named by that seam `<From> to <To>` and not copying Layer 2's account?
+  - **Rules**
+    - **How to write it:**
+      - For: states how the part acts, as scenarios that can each be run as a check.
+      - Write: one scenario per line, Given, when, then, about this part, each with its own number. A rule that realizes a Layer 1 value scenario says `Realizes <id>.` after its own number and keeps that scenario's Given and when text. Add rules for the edges and failures the owner gave.
+      - Example:
+        - 4.1. Realizes vision-3.1. Given the keeper has a commitment in mind, when they write it down in a few seconds, then Ledger saves it as active and confirms it is saved before the keeper looks away.
+        - 4.2. Given the keeper edits a commitment while offline, when the device reconnects, then Ledger accepts the recorded change and offers it to Presence.
+      - Mistake: a rule nobody can check ("Ledger is reliable"). Each rule states a situation, an event and a result that can be observed.
+    - **Ask the owner:** the rules for this part, each with its threshold, trigger and renewal. Follow-up: the edge (smallest, longest, none, missed) and what happens when broken or missed. Not supplied: the value or the broken case.
+    - **Check:**
+      - [ ] Is every rule a scenario that can be run as a check, with its own number and `Realizes` and its Layer 1 id where it realizes one?
+  - **Inside**
+    - **How to write it:**
+      - For: names the pieces the part is made of, so a maker sees its inner shape without any means.
+      - Write: one bullet per piece, giving its name and what it does. This topic lists pieces, so each bullet is typed as a piece, either with `(piece)` beside the name or by the topic heading. A piece cannot stand on its own and is never listed in Layer 2. When the part has no inside worth describing, write `None.`
+      - Example:
+        - A store of commitments (piece), which holds each item and its current state.
+        - A change log (piece), which records each edit in order so a change made apart can be reconciled.
+      - Mistake: naming a product as a piece ("a SQLite file"). Pieces are means-neutral; products belong in Construction.
+    - **Ask the owner:** what pieces is the part made of? Not supplied: a piece's name.
+    - **Check:**
+      - [ ] Is every piece named and typed as a piece?
+  - **Limits**
+    - **How to write it:**
+      - For: gives the checkable share of the Layer 1 qualities that this part must meet, so makers can check it.
+      - Write: one bullet per limit, with its number (`6.1`), a number, a testable condition or an observable result, ending with `(Layer 1, <quality or topic>)` for the Layer 1 entry that holds this number or result, else `(Layer 1, Not supplied: the quality)`; never the nearest quality. Name no means.
+      - Example:
+        - 6.1. A commitment is confirmed saved within one second of the keeper writing it (Layer 1, Prompt).
+        - 6.2. A saved commitment survives a closed app, a dead battery and a lost connection (Layer 1, Durable).
+      - Mistake: "fast" or "reliable" with nothing to check, or a limit citing a quality that does not state it. Every limit can be checked.
+    - **Ask the owner:** speed, time, counts and retention for this part, together. Follow-up: the worst acceptable value. Not supplied: any limit not given.
+    - **Check:**
+      - [ ] Is every limit checkable, and does it trace to a quality in Layer 1?
+  - **Construction**
+    - **How to write it:**
+      - For: closes the gaps a maker still has after Rules and Seams: the specific means, how the pieces are assembled, and the exact formats, values and tolerances at each seam.
+      - Write: only where a gap remains. Record each choice as an item with its number (`7.1`), naming the means or value and, where a Limit drives it, that Limit as the reason. Write `Not supplied:` for a value nobody has chosen.
+      - Example:
+        - 7.1. Each change is written to durable local storage before the save is confirmed, and only then offered to Presence. Reason: meets "survives a lost connection" and lets the one-second confirm happen without waiting for the network.
+        - Not supplied: how long a session stays open before the keeper must prove themselves again.
+      - Mistake: naming a means in Rules or Seams, or a value with no Limit behind it. Means and values are named here, each chosen to meet a Limit.
+    - **Ask the owner:** sizes, counts, materials, stack, set-up values, fasteners and schedules for this part, together. Follow-up: the tolerance. Not supplied: any "not decided" value; it stays `Not supplied:`.
+    - **Check:**
+      - [ ] Where Construction is written, does it name the means and give each seam its formats, values and tolerances?
+  - **Costs**
+    - **How to write it:**
+      - For: records what this part takes to build, run and change, so a maker and the owner know its price before it is made.
+      - Write: as in Layer 1, with numbers `8.1`, `8.2` and so on. Name a tool or a material only where it is what costs. Write `Not supplied:` for an amount nobody gave. When there are none, write `None.`
+      - Example:
+        - 8.1. Given a number of keepers use the app, when their commitments are held and served, then it costs 35 USD per month. Paid by the maintainer.
+        - 8.2. Given the stored form of a commitment changes, when stored commitments are carried forward, then it costs Not supplied: the hours one change needs. Paid by the maintainer.
+      - Mistake: a cost with no amount and no `Not supplied:`, a cost with no Given or when, or a price unrelated to what this part uses.
+    - **Ask the owner:** what does this part cost, at what condition or volume, at which moment (build, run or change), and what amount, paid by whom? Follow-up: the unit, whether it recurs (per month, per year or once), and what moves it. Not supplied: any condition, volume, amount or payer not given.
+    - **Check:**
+      - [ ] Is each cost written with its amount (or `Not supplied:`) and who pays it, or is the topic `None.`?
+  - **Risks**
+    - **How to write it:**
+      - For: records what could go wrong with this part and what answers it.
+      - Write: as in Layer 1, with numbers `9.1`, `9.2` and so on. An answer is an id of this part, of Layer 2 or of Layer 1, such as a Construction item that meets a Limit, or a rule. When there are none, write `None.`
+      - Example:
+        - 9.1. Given a keeper edits a commitment on two devices while offline, when both reconnect, then one edit can overwrite the other. Severity: Medium. Answered by detail.ledger-12.1.
+        - 9.2. Given the stored form of a commitment must change, when the change is rolled out, then existing commitments can be left unreadable. Severity: High. Answered by Not supplied: how a change in stored form is carried forward.
+      - Mistake: a risk the part cannot cause or answer. A risk about the whole subject goes in Layer 1; one about the division goes in Layer 2.
+    - **Ask the owner:** what could go wrong with this part, and how bad? Follow-up: which decision, rule or limit answers it. Not supplied: any severity or answer not given.
+    - **Check:**
+      - [ ] Does each risk give a situation, a harm, a severity and an answer that names an id (or `Not supplied:`), or is the topic `None.`?
+  - **Open Concerns**
+    - **How to write it:**
+      - For: records the concerns about this part that were raised and that nobody has settled yet, and that must be settled before the work is done, so none is lost. It is not a Risk, not a `Not supplied:` and not an Assumption. When settled, it moves into a Decision, an Assumption or a rule and leaves this list.
+      - Write: as in Layer 1, with numbers `10.1`, `10.2` and so on. Say what would settle it and what it feeds, such as a Limit, a decision in Construction or a rule. When there are none, write `None.`
+      - Example:
+        - 10.1. Given a keeper may stay signed in for a long time, when the maintainer says how long a session lasts, then the session length is chosen as a Limit and recorded as a decision. Raised by the maintainer.
+        - 10.2. Given the stored form of a commitment must change, when the maintainer says whether old versions of the app must keep working, then the way stored changes are carried forward is chosen. Raised by a reviewer of the part.
+      - Mistake: a concern that is really a risk, an assumption or a missing fact, or a concern with no one who raised it.
+    - **Ask the owner:** what is still unsettled, who raised it, and what would settle it? Follow-up: what follows once it is settled. Not supplied: a concern nobody raised stays out; never invent one.
+    - **Check:**
+      - [ ] Is each open concern written as a Given, when, then with who raised it, or is the topic `None.`?
+  - **Assumptions**
+    - **How to write it:**
+      - For: records what the part's rules rest on, each with its reason.
+      - Write: as in the other layers, with numbers (such as `11.1`). An assumption gives `Basis:` and `If wrong:`.
+      - Example:
+        - 11.1. A keeper holds hundreds, not millions, of live commitments, so the whole set can be held on a single device. Basis: personal task-keeping, from Layer 1. If wrong: the store and the one-second confirm would need a different approach.
+        - 11.2. The keeper's device knows the keeper's current time zone. Basis: consumer devices track the local zone as the keeper travels. If wrong: the keeper would have to set a zone by hand for "today" to be right.
+      - Mistake: an assumption with no `If wrong:`. Without it a reader cannot tell what would change.
+    - **Ask the owner:** Not asked. Filled from confirmed read-backs and the maker's choices.
+    - **Check:**
+      - [ ] Does each assumption give `Basis:` and `If wrong:`, or is the topic `None.`?
+  - **Decisions**
+    - **How to write it:**
+      - For: records the decisions about the part's shape that Construction does not hold, each with its reason.
+      - Write: as in the other layers, with numbers (such as `12.1`). A decision gives `Reason:`. A means or a value chosen to meet a Limit is recorded in Construction.
+      - Example:
+        - 12.1. The change log is kept rather than only the current value of each commitment. Reason: a change made offline can be reconciled only if the order of changes is known.
+        - 12.2. A commitment due "today" with no time is treated as due at the end of the keeper's day. Reason: it is not overdue until the day is over, which matches how the keeper reads "due today".
+      - Mistake: a decision with no `Reason:`, or a means or value recorded here that Construction holds.
+    - **Ask the owner:** Not asked. Filled from confirmed read-backs and the maker's choices.
+    - **Check:**
+      - [ ] Does each decision give `Reason:`, or is the topic `None.`?
+- **Check (whole layer):**
+  - [ ] Does it refer only to Layers 1 and 2?

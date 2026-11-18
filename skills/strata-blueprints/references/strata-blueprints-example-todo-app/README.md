@@ -1,0 +1,14 @@
+# To-do app example
+
+This folder is the to-do app example as a stack in separate files: `sbp-vision.md` (Layer 1), `sbp-structure.md` (Layer 2, ending with the Lifecycle view) and one `sbp-detail-<part>.md` for each part (Layer 3: access, ledger, folders, timing, notifier, presence). Lint the whole stack with `node skills/strata-blueprints/scripts/strata-blueprints-lint.mjs skills/strata-blueprints/references/strata-blueprints-example-todo-app --strict`.
+
+An item is numbered by its topic's number in its layer guide and a count that starts at 1 under each topic, and it is written with that number under its own topic: `9.1` is the first item under topic 9 (Risks). A citation, and `--impact`, put the document in front, joined with a hyphen: `vision`, `structure` or `detail.<part>`. So the first risk of the Vision is written `9.1` and cited `vision-9.1`, and the first Construction item of the part Session is written `7.1` and cited `detail.session-7.1`. Which topics are required is stated in the guide, under Short stacks.
+
+## What to notice
+
+- Layer 1 names no part and no tool. It speaks of commitments, groupings, due and alerts, the keeper's own words, so that the parts in Layer 2 and the means in Layer 3 can be chosen freely to serve it.
+- Every value scenario is numbered in Layer 1 (`3.1` to `3.7`, cited as `vision-3.1` to `vision-3.7`); the path in Layer 2 and the rule in Layer 3 that realize it say `Realizes` and the same full id. Following one id, `vision-3.4` for instance, shows the whole thread from "alert me" to Timing marking a commitment due and Notifier sending the message.
+- Specific means, such as a hash for the keeper's secret, an encrypted transport, a change log and a local-first write, appear only in Layer 3 Construction, each as a decision with a reason, and each chosen to meet a Limit that traces to a Layer 1 quality.
+- The privacy and identity qualities are carried all the way down: Layer 1 states "private by default" and "trustworthy with identity", Layer 2 makes Access a part every other part leans on, and Layer 3 gives Ledger, Folders, Notifier and Access concrete rules and limits that keep a keeper's commitments readable only by that keeper.
+- Three things the keeper cannot yet settle are marked `Not supplied:` rather than invented: whether a person without an account can be invited to a shared grouping, whether one member or an owner may unshare it, and how long a session lasts before the keeper must prove themselves again. A maker would ask for these before building, instead of guessing.
+- Costs and risks sit in the layer where each binds: the maintainer's time and the sharing risk in Layer 1, the build cost and the offline overwrite in Layer 2, the hosting cost in Ledger. An amount or an answer nobody gave is marked `Not supplied:`, and each risk names the decision that answers it.

@@ -1,0 +1,156 @@
+# Strata Blueprints guide: Layer 1, Vision
+Load while interviewing for, writing or checking Layer 1.
+
+- **Scope and shows:** the whole subject. It shows the subject, its actors and its outsiders.
+- **Intent:** what the subject is for, stated before any design.
+- **Audience:** anyone who needs to know why the subject exists, including those who will make it.
+- **Success:** Given someone who has never seen the subject, when they read this layer, then they can say what need it addresses, who it serves, and how success would be measured.
+- **Status:** always written.
+- **Contents:**
+  1. **Need**
+  2. **Target audience**
+  3. **Value**
+  4. **Focus**
+  5. **Success measures**
+  6. **Qualities and constraints**
+  7. **Vocabulary**
+  8. **Costs**
+  9. **Risks**
+  10. **Open Concerns**
+  11. **Assumptions**
+  12. **Decisions**
+- **Topics:**
+  - **Need**
+    - **How to write it:**
+      - For: names the gap the subject exists to close, so every later choice can be checked against it.
+      - Write: describe what is missing or wrong in the words of the people who feel it, and what they do about it today, if anything, before any solution. Two or three sentences.
+      - Example:
+        - A person carries many small commitments in their head, and one held only in memory is forgotten until it is late.
+        - They cannot tell at a glance what needs doing now, and want one trusted place that shows it.
+      - Mistake: stating the solution ("people need an app") as the need. A need is true whether or not the subject exists.
+    - **Ask the owner:** what problem exists, who has it, and what happens without a solution? Follow-up: how often, how bad. Not supplied: the reason or background the owner did not give.
+    - **Check:**
+      - [ ] Is the need stated in terms its target audience would recognise?
+  - **Target audience**
+    - **How to write it:**
+      - For: says who has the need, so value and success are judged by the right people.
+      - Write: one entry per kind of person or outsider, or a short paragraph that names each kind. Name it, say whether it is an actor or an outsider (beside its name, once for a list of one kind, or plainly in its sentence), and say what it wants or does. Include everyone with a stake.
+      - Example:
+        - **The keeper (actor):** a person managing their own commitments, who adds things through the day on whatever device is at hand.
+        - **The clock and calendar (outsider):** the passage of time, against which "due" is judged.
+      - Mistake: naming only the main user. Those who share, pay for, run or are affected by the subject are listed too.
+    - **Ask the owner:** who uses it, how many people, in which roles, and who pays? Follow-up: smallest and largest group. Not supplied: counts or payer.
+    - **Check:**
+      - [ ] Is the target audience named, with anyone else who has a stake?
+  - **Value**
+    - **How to write it:**
+      - For: shows what the subject gives each audience, as scenarios that the layers below trace.
+      - Write: one scenario per line, Given, when, then, from the audience's side. Give each its number (`3.1`, `3.2`, ...); Layer 2 paths and Layer 3 rules say they realize it by its full id (`vision-3.1`).
+      - Example:
+        - 3.1. Given the keeper has a commitment in mind, when they write it down in a few seconds, then it is saved and shows up as something to do.
+        - 3.2. Given some commitments have a day or time they are due, when the keeper looks, then they see what is due today and what is overdue, in due order.
+      - Mistake: describing how the subject works ("the app stores tasks in lists") instead of what the audience gets.
+    - **Ask the owner:** what does each audience gain? Follow-up: what would they lose without it. Not supplied: the gain for a group.
+    - **Check:**
+      - [ ] Is the value written as key scenarios?
+  - **Focus**
+    - **How to write it:**
+      - For: draws the line around what the subject sets out to cover, so the work stays inside it.
+      - Write: say what the subject covers in a sentence, then what it leaves out, in the audience's terms.
+      - Example:
+        - The app covers capturing commitments quickly, grouping them, judging what is due, and alerting the keeper.
+        - It does not cover note-taking, long documents or project planning with dependencies.
+      - Mistake: writing only what is covered. The exclusions are what keep the scope from growing.
+    - **Ask the owner:** what is in scope, and what is deliberately out? Follow-up: the nearest thing left out. Not supplied: the boundary.
+    - **Check:**
+      - [ ] Does it say what the subject covers and what it leaves out?
+  - **Success measures**
+    - **How to write it:**
+      - For: says how we would know the subject works, so "done" can be checked.
+      - Write: one checkable statement per line, each tied to a value scenario or a quality where one applies. Give a number, or the observable result in the audience's terms (it stops, it fits, it can be lifted). A Layer 3 Limit can set the number such a result needs; write `Not supplied: <the agreed limit>` where nobody has set it.
+      - Example:
+        - A commitment is captured in under five seconds from the moment the keeper decides to add it.
+        - A change made on one device is visible on another within a few seconds, without the keeper doing anything.
+      - Mistake: a measure such as "easy to use" with nothing to check. A measure names a number or an observable result.
+    - **Ask the owner:** Ask open-ended first: what number or result shows it worked? Then offer examples. Follow-up: target value and by when. Not supplied: the measure.
+    - **Check:**
+      - [ ] Can every success measure be checked?
+  - **Qualities and constraints**
+    - **How to write it:**
+      - For: states what must hold for the whole subject and the limits it works within, so every part inherits them.
+      - Write: one bullet per quality, its name first where it has one (bold helps), with what it means in the audience's terms. State each constraint (cost, time, rules) with where it comes from. Layer 3 Limits give each quality its checkable share. When two qualities pull apart, say which wins.
+      - Example:
+        - **Durable:** once the app says a commitment is saved, it survives a closed app and a lost connection.
+        - **Running cost:** it stays within what the maintainer can fund, as set by the maintainer's budget.
+      - Mistake: naming a tool as a quality ("uses a cloud database"). A tool is a means; Layer 1 names one only as a stated constraint with its source.
+    - **Ask the owner:** speed, size, cost, safety, legal and other limits, together. Follow-up: the worst acceptable value. Not supplied: any limit not given.
+    - **Check:**
+      - [ ] Is every constraint stated, with its source?
+  - **Vocabulary**
+    - **How to write it:**
+      - For: fixes the meaning of each key term, so the layers below use one word for one thing.
+      - Write: one bullet per term, the term first (bold helps), then its definition in one line. Define every term a later layer uses that a reader may not know, in the owner's words or `Not supplied:`.
+      - Example:
+        - **Commitment:** one thing the keeper means to do, the smallest unit the app holds.
+        - **Grouping:** a named collection of commitments the keeper arranges, such as "Work" or "Groceries".
+      - Mistake: defining a term in a later layer on first use. Every term later layers use is defined here, once.
+    - **Ask the owner:** Ask only about terms the owner used. Follow-up: one meaning each. Not supplied: a definition after "not decided".
+    - **Check:**
+      - [ ] Is every term used later defined in Vocabulary?
+  - **Costs**
+    - **How to write it:**
+      - For: records what the subject takes to build, run and change, and who pays, so the people who fund it can weigh it.
+      - Write: one bullet per cost: `- 8.1. Given [the condition or volume], when [the subject is built, run or changed], then it costs [amount, or Not supplied: the figure]. Paid by [who].` The amount is a number (commas and decimals allowed, with an optional currency symbol or a word like "about" before it) and a unit, optionally with a cadence such as "per month" or "per member per month", or `Not supplied:` followed by what is needed. The Given carries what moves the cost, as the owner gave it. Give each cost its number (`8.1`, `8.2`). At this layer a cost belongs to the whole subject. Write the bullets as a list, never as a table. When there are none, write `None.`
+      - Example:
+        - 8.1. Given the app is kept running, when the maintainer spends time on it, then it costs Not supplied: the hours each month. Paid by the maintainer.
+        - 8.2. Given a number of keepers use the app, when it is run for them, then it costs 50 USD per month. Paid by the maintainer.
+      - Mistake: a figure the owner did not give, a cost with no Given or when, or a cost with no one to pay it. What is missing is written `Not supplied:`.
+    - **Ask the owner:** what does the subject cost overall, at what condition or volume, at which moment (build, run or change), and what amount, paid by whom? Follow-up: the unit, whether it recurs (per month, per year or once), and what moves it. Not supplied: any condition, volume, amount or payer not given.
+    - **Check:**
+      - [ ] Is each cost written with its amount (or `Not supplied:`) and who pays it, or is the topic `None.`?
+  - **Risks**
+    - **How to write it:**
+      - For: records what could go wrong for the whole subject and what answers it, so a reader sees the harm and what holds it.
+      - Write: one bullet per risk: `- 9.1. Given [a situation], when [it goes wrong], then [the harm]. Severity: [High, Medium, Low or Not rated]. Answered by [the id of a decision, assumption or rule, or Not supplied: the answer].` Give the severity the owner gave; write `Not rated` when none was given. An answer is the id of a decision, an assumption, a rule or a limit of this layer. Give each risk its number (`9.1`, `9.2`). When there are none, write `None.`
+      - Example:
+        - 9.1. Given a keeper shares a grouping with the wrong person, when that person opens it, then the keeper's commitments are read by someone they did not intend. Severity: High. Answered by vision-12.1.
+        - 9.2. Given the one maintainer is away, when the app stops working, then keepers wait for a fix. Severity: Low. Answered by Not supplied: who covers for the maintainer.
+      - Mistake: a worry with no situation or no harm, or an answer that names no id. A risk says when it goes wrong and what follows; what is missing is written `Not supplied:`.
+    - **Ask the owner:** what could go wrong for the subject as a whole, and for whom? Follow-up: how bad (high, medium or low), and which decision, assumption or rule answers it. Not supplied: any severity or answer not given; a risk with no severity is written Not rated.
+    - **Check:**
+      - [ ] Does each risk give a situation, a harm, a severity and an answer that names an id (or `Not supplied:`), or is the topic `None.`?
+  - **Open Concerns**
+    - **How to write it:**
+      - For: records concerns that were raised and that nobody has settled yet, and that must be settled before the work is done, so none is lost. It is not a Risk (something that could go wrong, rated), not a `Not supplied:` (a missing fact at one spot) and not an Assumption (taken as true). When settled, it moves into a Decision, an Assumption or a rule and leaves this list. Valid in every layer; it weighs most in Layer 3 and least in Layer 1.
+      - Write: one bullet per concern: `- 10.1. Given [the unsettled situation], when [what would settle it happens], then [what follows, and what it feeds]. Raised by [who].` Give each concern its number (`10.1`, `10.2`). At this layer a concern belongs to the whole subject. Write the bullets as a list, never as a table. When there are none, write `None.`
+      - Example:
+        - 10.1. Given keepers may want their commitments in more than one language, when the maintainer says whether the app must be translated, then the qualities are re-weighed and the costs that follow from them are priced again. Raised by a keeper.
+        - 10.2. Given the one maintainer may be away for long, when the maintainer says who covers for them, then vision-9.2 gets its answer. Raised by a keeper.
+      - Mistake: a concern that is really a risk, an assumption or a missing fact (use that topic), or a concern with no one who raised it. A concern is settled by a later event and then moves out of this list.
+    - **Ask the owner:** what is still unsettled, who raised it, and what would settle it? Follow-up: what follows once it is settled. Not supplied: a concern nobody raised stays out; never invent one.
+    - **Check:**
+      - [ ] Is each open concern written as a Given, when, then with who raised it, or is the topic `None.`?
+  - **Assumptions**
+    - **How to write it:**
+      - For: records what this layer takes as true without proof, so a reader can challenge it.
+      - Write: one bullet per assumption, with its number (such as `11.1`). Give `Basis:` (why we think so) and `If wrong:` (what would change). Keep both labels in the assumption's own bullet, on its line or in lines nested under it, with no blank line between them. Write `Not supplied: <what is needed>` for a fact nobody has given. When there are none, write `None.`
+      - Example:
+        - 11.1. Most keepers hold hundreds, not millions, of live commitments. Basis: personal task-keeping, not archival storage. If wrong: the durable and prompt qualities would need stricter limits.
+        - 11.2. The keeper reaches the app on devices they already own. Basis: the audience is one person managing personal commitments, not a managed fleet. If wrong: the reachable-anywhere quality would be re-weighed.
+      - Mistake: a choice written as an assumption, or an assumption with no reason. An assumption says why we think so and what would change if it is wrong; a choice goes under Decisions.
+    - **Ask the owner:** Not asked. Filled from confirmed read-backs and the maker's choices.
+    - **Check:**
+      - [ ] Does each assumption give `Basis:` and `If wrong:`, or is the topic `None.`?
+  - **Decisions**
+    - **How to write it:**
+      - For: records what this layer chose, each with its reason, so a reader can challenge it.
+      - Write: one bullet per decision, with its number (such as `12.1`). Give `Reason:` in the decision's own bullet, on its line or in a line nested under it, with no blank line before it. In the reason, name the main alternative passed over only if the owner named one. Write `Not supplied: <what is needed>` for a choice nobody has made. When there are none, write `None.`
+      - Example:
+        - 12.1. The app serves one keeper's own commitments first, with sharing as a deliberate act. Reason: the need is a trusted personal place, which a shared team board would not give.
+        - 12.2. The app covers personal commitments only and leaves team workflows out. Reason: a team workspace would add roles and rules the need does not call for.
+      - Mistake: a decision with no reason, or a fact written as a decision. A decision says why it was chosen; what is taken as true without proof goes under Assumptions.
+    - **Ask the owner:** Not asked. Filled from confirmed read-backs and the maker's choices.
+    - **Check:**
+      - [ ] Does each decision give `Reason:`, or is the topic `None.`?
+- **Check (whole layer):**
+  - [ ] Does it name no parts and no specific means other than a stated constraint?

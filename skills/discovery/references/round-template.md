@@ -25,4 +25,4 @@ Rules:
 
 ## Closing
 
-Discovery ends when a round opens no new questions and the owner confirms the shared understanding. Each answer is written into the strata-bp documents as a draft for the owner to approve.
+Discovery ends when a round opens no new questions and the owner confirms the shared understanding. Each answer is written into the strata-blueprints documents as a draft for the owner to approve.

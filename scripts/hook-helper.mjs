@@ -27,12 +27,15 @@ if (mode === "lint") {
   const given = ti.path || ti.file_path;
   if (typeof given !== "string") process.exit(0);
   const base = path.basename(given);
-  if (base !== "blueprint.md" && !base.endsWith("-blueprint.md")) process.exit(0);
+  const split = base.startsWith("sbp-") && base.endsWith(".md");
+  if (base !== "blueprint.md" && !base.endsWith("-blueprint.md") && !split) process.exit(0);
   const file = path.resolve(cwd, given);
+  // A file of a stack in separate files is linted with its folder: one file alone lacks the other layers.
+  const target = split ? path.dirname(file) : file;
   if (!fs.existsSync(file)) process.exit(0);
-  const lint = path.join(path.dirname(new URL(import.meta.url).pathname), "..", "skills", "strata-bp", "scripts", "strata-bp-lint.mjs");
+  const lint = path.join(path.dirname(new URL(import.meta.url).pathname), "..", "skills", "strata-blueprints", "scripts", "strata-blueprints-lint.mjs");
   try {
-    const out = execFileSync("node", [lint, file, "--strict"], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+    const out = execFileSync("node", [lint, target, "--strict"], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
     void out; process.exit(0);
   } catch (e) {
     if (e.status === 1) {

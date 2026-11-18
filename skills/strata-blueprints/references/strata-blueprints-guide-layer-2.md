@@ -1,0 +1,147 @@
+# Strata Blueprints guide: Layer 2, Structure
+Load while interviewing for, writing or checking Layer 2.
+
+- **Scope and shows:** the whole subject. It shows the parts, the seams between them and with the outside, the actors and the outsiders.
+- **Intent:** how the subject is divided into parts, and where each part meets another part or the outside.
+- **Audience:** those who decide how the work is divided.
+- **Success:** Given this layer and Layer 1, when someone checks each part and each key scenario, then every part and seam is named, traces to the purpose, and every scenario has a path through the parts.
+- **Status:** always written.
+- **Rests on:** Layer 1; see "How the layers depend on each other" in the core guide.
+- **Contents:**
+  1. **Parts**
+  2. **Standing**
+  3. **Seams between parts**
+  4. **Seams with the outside**
+  5. **Shared things**
+  6. **Scenario paths**
+  7. **Costs**
+  8. **Risks**
+  9. **Open Concerns**
+  10. **Assumptions**
+  11. **Decisions**
+- **Topics:**
+  - **Parts**
+    - **How to write it:**
+      - For: divides the subject into units of responsibility, so each need and value in Layer 1 has an owner.
+      - Write: one bullet per part, `Name (part): responsibility`, in one line and with one responsibility. Keep the parts at a similar size. For a subject made of independent members, list the peers, each with its own stack.
+      - Example:
+        - Ledger (part): holds each commitment and its state, and answers for what is saved, changed and done.
+        - Timing (part): judges each commitment against the clock and says what is due, overdue and upcoming.
+      - Mistake: dividing by where things run or what they are made of (a "server" part or a "database" part). Parts divide by responsibility.
+    - **Ask the owner:** what is the subject divided into, and what is each part responsible for? Follow-up: anything that fits no part. Not supplied: a part's responsibility.
+    - **Check:**
+      - [ ] Does every part have a name, a type and a one-line responsibility?
+      - [ ] Does every part trace back to a need or a value in Layer 1?
+  - **Standing**
+    - **How to write it:**
+      - For: says for each part whether its Detail is written here or in a stack of its own, so a reader knows where to look.
+      - Write: say for each part that it is described here as an entry in this document, such as `Ledger: described here`, or that it has its own stack, named by its file, such as `Presence: own stack, presence/presence.md`. One sentence may cover every part when they share a standing. A part gets its own stack when someone can use it on its own. In a stack of separate files, name each part's detail file, such as `Ledger: sbp-detail-ledger.md`; a part with its own stack names its folder, such as `Presence: own stack, presence/`.
+      - Example:
+        - Ledger: described here.
+        - Presence: own stack, presence/presence.md
+      - Mistake: saying "own stack" without the file. Standing names the file.
+    - **Ask the owner:** is each part inside this stack, its own stack, or an outside peer? Not supplied: the standing of a part.
+    - **Check:**
+      - [ ] Does each part say it is described here, or name its detail file or the folder or file of its own stack?
+  - **Seams between parts**
+    - **How to write it:**
+      - For: shows where two parts meet, so each can be made knowing what the other offers and needs.
+      - Write: one bullet per seam, named `<From> to <To>`, saying what crosses and why. Name it from the part that initiates; saying what starts it helps.
+      - Example:
+        - Ledger to Timing: each commitment's due day or time crosses, so Timing can judge it. Ledger initiates when a due value is set or changed.
+        - Timing to Notifier: the fact that a commitment has become due, and when, crosses, so Notifier can decide to send. Timing initiates when a due moment arrives.
+      - Mistake: a vague label such as "uses" or "sends". State what crosses and why.
+    - **Ask the owner:** for each pair of parts that touch, what passes between them and who starts it? Follow-up: how often, what if it fails. Not supplied: the trigger.
+    - **Check:**
+      - [ ] Does every seam say what crosses, in which direction, and why?
+  - **Seams with the outside**
+    - **How to write it:**
+      - For: shows where the subject meets its actors and outsiders, so what it depends on is explicit.
+      - Write: the same form as seams between parts, with the actor or outsider as one end. Every actor and outsider from Layer 1 that the subject exchanges something with appears in at least one seam. An actor that reaches the subject only through an outsider, such as a device or a channel, meets the subject at that outsider's seam, which stands for it.
+      - Example:
+        - Timing to the clock and calendar: the current time crosses in, so Timing can judge what is due. Timing initiates when it reads the time.
+        - Notifier to a notification channel: a message for the keeper crosses out. Notifier initiates when a commitment is due and the app is closed.
+      - Mistake: leaving an outsider the subject depends on with no seam. A dependency with no seam has no owner.
+    - **Ask the owner:** which outside services, people or systems does it touch, who initiates, and how is it secured? Follow-up: what if the outside is down. Not supplied: the service or the security.
+    - **Check:**
+      - [ ] Does every actor and outsider the subject exchanges something with appear in a seam, or reach the subject through an outsider that does?
+  - **Shared things**
+    - **How to write it:**
+      - For: lists what several parts rely on in common, once, so no part redefines it.
+      - Write: one bullet per shared thing: what it is, the part that establishes it where one does, and the parts that rely on it.
+      - Example:
+        - The keeper's proven identity, established by Access, is relied on by every other part to scope what it holds to that one keeper.
+        - A single notion of "now", read from the clock and calendar, is relied on by Timing and Notifier so that "due" means the same everywhere.
+      - Mistake: describing the shared thing again inside each part that uses it. It is listed once, here.
+    - **Ask the owner:** what do several parts use together, and who owns each? Follow-up: who may change it. Not supplied: the owner.
+    - **Check:**
+      - [ ] Are the shared things listed once, here?
+  - **Scenario paths**
+    - **How to write it:**
+      - For: shows that every key scenario can be carried out by the parts, which is how the division is tested.
+      - Write: one line per Layer 1 value scenario, with its own number, then `Realizes` and the scenario's full id, keeping its Given and when text word for word, and showing the parts it crosses in the order they act.
+      - Example:
+        - 6.1. Realizes vision-3.1. Given the keeper has a commitment in mind, when they write it down in a few seconds, then Access admits the keeper and Ledger saves the new item under the keeper.
+        - 6.2. Realizes vision-3.2. Given some commitments have a day or time they are due, when the keeper looks, then Ledger supplies the due values and Timing ranks them into today, overdue and upcoming.
+      - Mistake: rewording the Given or when text. The path keeps the scenario's words so it can be traced by the `Realizes` id.
+    - **Ask the owner:** walk one typical case from start to end, then one failure. Follow-up: where it ends. Not supplied: a step the owner skipped.
+    - **Check:**
+      - [ ] Does every key scenario have a path through the parts that says `Realizes` and its id?
+  - **Costs**
+    - **How to write it:**
+      - For: records what the division takes to build, run and change, and who pays, so the cost of a part or a seam is visible where the division is decided.
+      - Write: as in Layer 1, with numbers `7.1`, `7.2` and so on. A cost here belongs to a part, a seam or the whole division. When there are none, write `None.`
+      - Example:
+        - 7.1. Given the app needs a number of screens, when the phone app and the web page are built, then it costs 4,800 USD one-off. Paid by the maintainer.
+        - 7.2. Given keepers receive a number of alerts, when the notification channel sends them, then it costs 15 USD per month. Paid by the maintainer.
+      - Mistake: pricing a tool or a material. A means and its price belong in Layer 3.
+    - **Ask the owner:** what does each part or seam cost, at what condition or volume, at which moment (build, run or change), and what amount, paid by whom? Follow-up: the unit, whether it recurs (per month, per year or once), and what moves it. Not supplied: any condition, volume, amount or payer not given.
+    - **Check:**
+      - [ ] Is each cost written with its amount (or `Not supplied:`) and who pays it, or is the topic `None.`?
+  - **Risks**
+    - **How to write it:**
+      - For: records what could go wrong in how the work is divided, and what answers it.
+      - Write: as in Layer 1, with numbers `8.1`, `8.2` and so on. An answer is an id from Layer 1 or Layer 2. When there are none, write `None.`
+      - Example:
+        - 8.1. Given the keeper changes the same grouping on two devices while offline, when both devices reconnect, then one change can overwrite the other. Severity: Medium. Answered by structure-11.2.
+        - 8.2. Given Access cannot be reached, when a keeper opens the app, then they reach nothing. Severity: Not rated. Answered by Not supplied: what the keeper sees when Access is down.
+      - Mistake: a risk with no situation or no harm, or an answer that names no id.
+    - **Ask the owner:** what could go wrong in how the work is divided, at a part or a seam? Follow-up: how bad, and which decision or assumption answers it. Not supplied: any severity or answer not given.
+    - **Check:**
+      - [ ] Does each risk give a situation, a harm, a severity and an answer that names an id (or `Not supplied:`), or is the topic `None.`?
+  - **Open Concerns**
+    - **How to write it:**
+      - For: records the concerns about how the work is divided that were raised and that nobody has settled yet, so none is lost. It is not a Risk, not a `Not supplied:` and not an Assumption. When settled, it moves into a Decision, an Assumption or a rule and leaves this list.
+      - Write: as in Layer 1, with numbers `9.1`, `9.2` and so on. A concern here belongs to a part, a seam or the whole division. When there are none, write `None.`
+      - Example:
+        - 9.1. Given Notifier messages a keeper when the app is not open, when the maintainer says which channels a keeper may choose, then the seam between Notifier and the outside is fixed and structure-7.2 can be checked. Raised by the maintainer.
+        - 9.2. Given Folders and Presence both hold who may see a grouping, when the maintainer says which of them is the judge, then the seam between them is fixed. Raised by a keeper.
+      - Mistake: a concern that is really a risk, an assumption or a missing fact, or a concern with no one who raised it.
+    - **Ask the owner:** what is still unsettled, who raised it, and what would settle it? Follow-up: what follows once it is settled. Not supplied: a concern nobody raised stays out; never invent one.
+    - **Check:**
+      - [ ] Is each open concern written as a Given, when, then with who raised it, or is the topic `None.`?
+  - **Assumptions**
+    - **How to write it:**
+      - For: records what the division takes as true without proof, so a reader can challenge it.
+      - Write: as in Layer 1, each with its number (such as `10.1`), with `Basis:` and `If wrong:`. Record what a part's edges rest on.
+      - Example:
+        - 10.1. A commitment belongs to exactly one grouping at a time. Basis: the keeper arranges commitments into groups they think in. If wrong: Folders and Ledger would need a many-to-many seam.
+        - 10.2. The clock and calendar can be read at any moment the app is open. Basis: every device the keeper uses keeps its own time. If wrong: Timing would need a seam to a time source of its own.
+      - Mistake: stating an assumption as settled fact. An assumption says what would change if it is wrong.
+    - **Ask the owner:** Not asked. Filled from confirmed read-backs and the maker's choices.
+    - **Check:**
+      - [ ] Does each assumption give `Basis:` and `If wrong:`, or is the topic `None.`?
+  - **Decisions**
+    - **How to write it:**
+      - For: records what was chosen in the division, each with its reason.
+      - Write: as in Layer 1, each with its number (such as `11.1`), with `Reason:`. Record why a part is a part of its own, and why two parts were kept apart.
+      - Example:
+        - 11.1. "Due" is judged by one part, Timing, rather than by each part that cares about time. Reason: one judge keeps "due" meaning the same everywhere.
+        - 11.2. Keeping devices in step is one part, Presence, separate from the parts that hold the data. Reason: reconciling changes made apart is one hard job, and concentrating it keeps each data part simple.
+      - Mistake: recording the division without the reasons for it. A reader cannot tell a deliberate cut from an accident.
+    - **Ask the owner:** Not asked. Filled from confirmed read-backs and the maker's choices.
+    - **Check:**
+      - [ ] Does each decision give `Reason:`, or is the topic `None.`?
+- **Check (whole layer):**
+  - [ ] Is any view with too many parts to read split into focused views?
+  - [ ] Does it refer only to Layer 1, never to Layers 2 or 3?

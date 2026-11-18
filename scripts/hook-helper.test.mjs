@@ -31,8 +31,9 @@ const put = (dir, rel, text) => {
   fs.writeFileSync(f, text);
   return f;
 };
-const CLEAN = "## Layer 1: Vision\nScope: x\n\n## Layer 2: Architecture\nScope: y\n";
-const FLAGGED = CLEAN + "TODO\n";
+// CLEAN is the skill's own bundled example, which lints with no warning; FLAGGED is a stack missing its Structure layer.
+const CLEAN = fs.readFileSync(path.join(here, "..", "skills", "strata-blueprints", "references", "strata-blueprints-example.md"), "utf8");
+const FLAGGED = "## Layer 1: Vision\nScope: x\n";
 const post = (dir, tool_input) => JSON.stringify({ hook_event_name: "PostToolUse", cwd: dir, tool_name: "fs_write", tool_input });
 
 test("handoff prints header and content", () => {
@@ -84,8 +85,8 @@ test("lint flagged blueprint.md exits 1 with output on stdout and stderr", () =>
   put(d, "blueprint.md", FLAGGED);
   const r = run("lint", post(d, { path: "blueprint.md" }), "/");
   assert.equal(r.code, 1);
-  assert.match(r.err, /unfinished/);
-  assert.match(r.out, /unfinished/);
+  assert.match(r.err, /layer-heading/);
+  assert.match(r.out, /layer-heading/);
 });
 
 test("lint matches names ending -blueprint.md and tool_input.file_path", () => {
@@ -101,6 +102,15 @@ test("lint ignores notes.md silently", () => {
   const r = run("lint", post(d, { path: "notes.md" }), "/");
   assert.equal(r.code, 0);
   assert.equal(r.out + r.err, "");
+});
+
+test("lint of an sbp- file lints its whole folder", () => {
+  const d = tmp();
+  const ex = path.join(here, "..", "skills", "strata-blueprints", "references", "strata-blueprints-example-todo-app");
+  for (const n of fs.readdirSync(ex)) if (n.startsWith("sbp-")) put(d, "stack/" + n, fs.readFileSync(path.join(ex, n), "utf8"));
+  assert.equal(run("lint", post(d, { path: "stack/sbp-vision.md" }), "/").code, 0);
+  put(d, "stack/sbp-structure.md", "## Layer 1: Vision\nScope: x\n");
+  assert.equal(run("lint", post(d, { path: "stack/sbp-vision.md" }), "/").code, 1);
 });
 
 test("lint on a missing blueprint exits 0", () => {
