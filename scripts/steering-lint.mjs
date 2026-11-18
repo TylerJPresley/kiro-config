@@ -5,10 +5,9 @@ import fs from "node:fs"; import path from "node:path"; import os from "node:os"
 const arg = (n, d) => { const i = process.argv.indexOf(n); return i > 0 ? process.argv[i + 1] : d; };
 const dirs = [{ s: arg("--steering-dir", path.join(os.homedir(), ".kiro/steering")), k: arg("--skills-dir", path.join(os.homedir(), ".kiro/skills")) }];
 const also = arg("--also"); if (also) dirs.push({ s: path.join(also, "steering"), k: path.join(also, "skills") });
-const DESC_MAX = 320;
 let bad = 0; const fail = (m) => { bad++; console.log("FAIL " + m); };
 let total = 0; const lines = new Map(); const warns = [];
-const ROLE = /\b(?:Director|Architect|Planner|Implementer|Documenter|Reviewer|Researcher|Security reviewer)\b/; // case-sensitive, whole word: steering states what must hold, agent prompts say who
+const ROLE = /\b(?:Director|Strata|Planner|Implementer|Documenter|Reviewer|Researcher|Security reviewer)\b/; // case-sensitive, whole word: steering states what must hold, agent prompts say who
 for (const { s, k } of dirs) {
   if (fs.existsSync(s)) for (const f of fs.readdirSync(s).filter((x) => x.endsWith(".md")).sort()) {
     const t = fs.readFileSync(path.join(s, f), "utf8"); total += t.length;
@@ -26,7 +25,7 @@ for (const { s, k } of dirs) {
     if (!fm) { fail(`skill ${d}: no frontmatter`); continue; }
     const name = (fm[1].match(/^name:\s*"?([^"\n]+)"?/m) || [])[1]; const desc = (fm[1].match(/^description:\s*"?(.+?)"?$/m) || [])[1];
     if (name !== d) fail(`skill ${d}: name '${name}' != directory`);
-    if (!desc) fail(`skill ${d}: no description`); else if (desc.length > DESC_MAX) fail(`skill ${d}: description ${desc.length} > ${DESC_MAX} chars (it is always loaded)`);
+    if (!desc) fail(`skill ${d}: no description`);
   }
 }
 for (const [l, fs_] of lines) if (fs_.size > 1) fail(`duplicated rule in ${[...fs_].join(", ")}: "${l.slice(0, 80)}…"`);

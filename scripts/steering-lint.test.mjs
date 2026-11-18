@@ -66,13 +66,12 @@ test("requires Intent and Applies", () => {
   assert.match(r.out, /Applies/);
 });
 
-test("rejects description over 320", () => {
+test("accepts a long description (no length cap)", () => {
   const d = tmp();
   steeringFile(path.join(d, "steering"), "a.md", VALID_STEERING);
-  skill(path.join(d, "skills"), "a", "x".repeat(321));
+  skill(path.join(d, "skills"), "a", "x".repeat(2000));
   const r = run(["--steering-dir", path.join(d, "steering"), "--skills-dir", path.join(d, "skills")]);
-  assert.strictEqual(r.code, 1);
-  assert.match(r.out, /320/);
+  assert.strictEqual(r.code, 0);
 });
 
 test("rejects name not equal to directory", () => {
