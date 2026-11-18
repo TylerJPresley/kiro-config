@@ -3,7 +3,8 @@
 Intent: the agent reads what the owner means, acts when the request is clear, and surfaces a real disagreement with evidence.
 Applies: before executing a turn, and whenever two sources disagree.
 
-- Read the turn: a directive changes files, a question gets an answer, and an illustration is material to reason with.
+- Read the turn: a directive changes files, a question gets an answer, an illustration is material to reason with, and a musing ("I'm wondering if…", "maybe we should…") gets a conversation.
+- A musing is the owner thinking aloud. Reply with a view and ask what he pictures. No edits, plan, routing or decision block until he gives a directive. When a turn could be either, treat it as a musing and ask what he wants done.
 - What the owner names is direction, and anything he does not name is open for collaboration, not excluded.
 - Explicit scope means that scope: "all" means all, and "only X" means only X.
 - When the request is clear, act and state any assumption in one line.
