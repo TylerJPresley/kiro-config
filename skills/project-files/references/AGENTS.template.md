@@ -2,29 +2,41 @@
 
 <one line: what it is>
 
-## Layout
+Overview for people: [README.md](README.md).
 
-<top-level folders and what each holds>
+## Commands
 
-## Build and verify
+- Build: `<command with flags>`
+- Test (all): `<command with flags>`
+- Test (single): `<command with flags>`
+- Lint: `<command with flags>`
+- Gate: `node gate.mjs` (only when the project has `gate.mjs`)
 
-<the commands. When the project has checks to run, it adds `gate.mjs` at its root and `node gate.mjs` is the gate.>
+Pre-flight: run <the test and lint commands above> before every commit.
 
-## Specification
+## Stack
 
-<where the blueprints live and who changes them>
+<language, runtime and framework with versions, and key dependencies>
 
-## Protected paths
+## Map
 
-<files and folders an agent leaves unchanged>
+<top-level folders and what each holds; where the blueprints live and who changes them>
 
-## Git
+## Conventions
 
-Branch model: <gitflow, or trunk only>
-Release branch: <main>
-Integration branch: <develop, or none>
-Engineer branch: <dev/<engineer>, or none when trunk only>
+<naming, structure, one short code example>
+
+## Boundaries
+
+- Always: <e.g. run the gate before finishing>
+- Ask first: <e.g. adding a dependency, changing a public interface>
+- Never: <e.g. commit secrets, edit protected paths: list them>
+
+## PR review guidelines
+
+- Flag: <failing or missing checks, changed test assertions, new dependencies, secrets, out-of-scope changes, docs that disagree with code, missing AI disclosure>
+- Ignore: <formatting the linter handles, wording preferences, generated files>
 
 Licenses allowed: MIT, Apache-2.0, BSD-3-Clause, ISC
 
-Follow `CONTRIBUTING.md` for this project's standards.
+Git, changelog, dependencies and review rules: [CONTRIBUTING.md](CONTRIBUTING.md).

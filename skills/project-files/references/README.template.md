@@ -1,15 +1,35 @@
 # <name>
 
-<one line: what it is and who it is for>
+**AI agents:** start with [AGENTS.md](AGENTS.md) for commands, project map and rules.
 
-## Requirements
+<optional: one or two badges, such as build status and license>
 
-<runtimes, versions, accounts>
+<short description: the value proposition, under 120 characters>
 
-## Install and run
+## Table of Contents
 
-<the exact commands to install and run it>
+- [Background](#background)
+- [Install](#install)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Background
+
+<why it exists and who it is for; link docs/ for the API reference and more>
+
+## Install
+
+<requirements (runtimes, versions), then the exact install commands>
+
+## Usage
+
+<a copy-paste quickstart in a code block; add a screenshot or GIF when there is visual output; link docs/ for more>
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-<the project's outbound license>
+<SPDX id> (see [LICENSE](LICENSE))
